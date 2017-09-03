@@ -11,6 +11,7 @@ simulation
     The track should be represented as a collection of Line2D objects.
     The world should be borderless, all coordinates will be based on an origin (instead of in relation to the edges). The world should be updated once every 10 milliseconds. All distances should be measured in Units(U).
     The car should contain the 8 sensors. The car should initially be placed on the origin.
+    Unless handling graphics, all coordinates should have up as positive y, right as positive x.
 
 
 network

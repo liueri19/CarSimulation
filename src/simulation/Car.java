@@ -1,6 +1,8 @@
 package simulation;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.geom.Rectangle2D;
 
 /**
  * Represents a car to be controlled. A car can only be turned
@@ -11,57 +13,82 @@ import javax.swing.*;
  * two on each side pointing PI/8 away from the straight forward, two each
  * side pointing PI/4 away from forward, last two pointing sideways.
  */
-public class Car {
+public class Car extends Rectangle2D.Double {
+	/**
+	 * Default color for rendering cars.
+	 */
+	public static final Color COLOR = new Color(50, 255, 50, 100);
 	/**
 	 * In U/ms^2. This is the acceleration constant used when {@link #accelerate()}
 	 * is called.
 	 */
-	public static final int ACCELERATION = 5;
+	public static final double ACCELERATION = 5;
 	/**
 	 * U/ms^2
 	 */
-	public static final int DECELERATION = -5;	//may be changed to be different from acceleration
+	public static final double DECELERATION = -5;	//may be changed to be different from acceleration
+	public static final double TURN_AMOUNT = Math.PI / 15;
 	/**
-	 * An angle in radians starting from x-positive going up.
+	 * Width and height of the car, used for painting and collision detection.
 	 */
-	private int direction = 0;
+	public static final int WIDTH = 40, HEIGHT = 70;
+	/**
+	 * An angle in radians.
+	 */
+	private double direction = - Math.PI / 2;
 	/**
 	 * U/ms
 	 */
-	private int speed = 0;
-	private double x = 0, y = 0;
+	private double speed = 0D;
+	private double xC, yC;
+	/**
+	 * Construct a car at (10, 10) with default width and height.
+	 */
+	public Car() {
+		this.setRect(100, 100, WIDTH, HEIGHT);
+		xC = getX() + WIDTH / 2D;
+		yC = getY() + HEIGHT / 2D;
+	}
 
 	/**
 	 * Get the current speed of the car in units per second.
 	 * @return the current speed in units per second
 	 */
-	public int getSpeed() {
+	public synchronized double getSpeed() {
 		return speed;
 	}
 
 	/**
-	 * Returns the x coordinate of this car in relation to
-	 * the origin. Not to be confused with {@link JComponent#getX()}.
-	 * @return returns the x coordinate in relation to the origin
+	 * Get the current heading of the car in radians.
+	 * @return the current heading
 	 */
-	public double getXCoordinate() {
-		return x;
+	public synchronized double getDirection() {
+		return direction;
 	}
 
 	/**
-	 * Returns the y coordinate of this car in relation to
-	 * the origin. Not to be confused with {@link JComponent#getY()}.
-	 * @return returns the y coordinate in relation to the origin
+	 * Returns the xC coordinate of this car in relation to
+	 * the origin. Not to be confused with {@link JComponent#getX()}.
+	 * @return returns the xC coordinate in relation to the origin
 	 */
-	public double getYCoordinate() {
-		return y;
+	public synchronized double getXCoordinate() {
+		return xC;
+	}
+
+	/**
+	 * Returns the yC coordinate of this car in relation to
+	 * the origin. Not to be confused with {@link JComponent#getY()}.
+	 * @return returns the yC coordinate in relation to the origin
+	 */
+	public synchronized double getYCoordinate() {
+		return yC;
 	}
 
 	/**
 	 * Accelerate this car by {@link #ACCELERATION}.
 	 * @return the speed after acceleration
 	 */
-	public int accelerate() {
+	public synchronized double accelerate() {
 		speed += ACCELERATION;
 		return speed;
 	}
@@ -70,8 +97,37 @@ public class Car {
 	 * Decelerate this car by {@link #DECELERATION}.
 	 * @return the speed after deceleration.
 	 */
-	public int decelerate() {
+	public synchronized double decelerate() {
 		speed += DECELERATION;
 		return speed;
+	}
+
+	/**
+	 * Turn this car by {@link #TURN_AMOUNT} radians to the left.
+	 * @return the updated direction
+	 */
+	public synchronized double turnLeft() {
+		direction += TURN_AMOUNT;
+		return direction;
+	}
+
+	/**
+	 * Turn this car by {@link #TURN_AMOUNT} radians to the right.
+	 * @return the updated direction
+	 */
+	public synchronized double turnRight() {
+		direction -= TURN_AMOUNT;
+		return  direction;
+	}
+
+	/**
+	 * Update the location of this car based on the current speed and direction.
+	 */
+	protected synchronized void update() {
+		xC += getSpeed() * Math.cos(getDirection());
+		x = xC - WIDTH / 2;
+		yC += getSpeed() * Math.sin(getDirection());
+		y = y - HEIGHT / 2;
+//		turnRight();
 	}
 }
