@@ -11,7 +11,7 @@ public class Sensor {
 	 * This value assumes a 0 along the a axis.
 	 */
 	private final double direction;
-	private final Car host;
+	private final Car host;	//only for x y information
 
 	/**
 	 * Construct a sensor facing the specified direction on the specified
@@ -26,7 +26,8 @@ public class Sensor {
 
 	/**
 	 * Measure the distance of a line segment formed by one point extending
-	 * toward a specific direction until blocked by a surface.
+	 * toward a specific direction until blocked by a surface or reaching the
+	 * maximum of 500 units.
 	 * @return the distance measured
 	 */
 	public double measureDistance() {

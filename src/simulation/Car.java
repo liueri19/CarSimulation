@@ -31,7 +31,7 @@ public class Car extends Rectangle2D.Double {
 	/**
 	 * Width and height of the car, used for painting and collision detection.
 	 */
-	public static final int WIDTH = 40, HEIGHT = 70;
+	public static final double WIDTH = 40, HEIGHT = 70;
 	/**
 	 * An angle in radians.
 	 */
@@ -39,13 +39,21 @@ public class Car extends Rectangle2D.Double {
 	/**
 	 * U/ms
 	 */
-	private double speed = 0D;
+	private double speed = 1;
+	/**
+	 * x and y coordinates of the center of the car
+	 */
 	private double xC, yC;
 	/**
 	 * Construct a car at (10, 10) with default width and height.
 	 */
+	private Sensor sensorL, sensorR, sensorF, sensorB, sensorFL, sensorFR, sensorLF, sensorRF;
+	private Sensor[] sensors = {
+			sensorL, sensorLF, sensorFL, sensorF, sensorFR, sensorRF, sensorR
+	};
+
 	public Car() {
-		this.setRect(100, 100, WIDTH, HEIGHT);
+		super(100, 100, WIDTH, HEIGHT);
 		xC = getX() + WIDTH / 2D;
 		yC = getY() + HEIGHT / 2D;
 	}
@@ -67,18 +75,18 @@ public class Car extends Rectangle2D.Double {
 	}
 
 	/**
-	 * Returns the xC coordinate of this car in relation to
+	 * Returns the x coordinate of the center of this car in relation to
 	 * the origin. Not to be confused with {@link JComponent#getX()}.
-	 * @return returns the xC coordinate in relation to the origin
+	 * @return returns the x coordinate in relation to the origin
 	 */
 	public synchronized double getXCoordinate() {
 		return xC;
 	}
 
 	/**
-	 * Returns the yC coordinate of this car in relation to
+	 * Returns the y coordinate of the center of this car in relation to
 	 * the origin. Not to be confused with {@link JComponent#getY()}.
-	 * @return returns the yC coordinate in relation to the origin
+	 * @return returns the y coordinate in relation to the origin
 	 */
 	public synchronized double getYCoordinate() {
 		return yC;
@@ -129,5 +137,7 @@ public class Car extends Rectangle2D.Double {
 		yC += getSpeed() * Math.sin(getDirection());
 		y = y - HEIGHT / 2;
 //		turnRight();
+		//print state
+//		System.out.printf("Car: %f, %f%n", xC, yC);
 	}
 }
