@@ -17,16 +17,16 @@ public class Car extends Rectangle2D.Double {
 	/**
 	 * Default color for rendering cars.
 	 */
-	public static final Color COLOR = new Color(50, 255, 50, 100);
+	public static final Color DEFAULT_COLOR = new Color(50, 255, 50, 100);
 	/**
 	 * In U/ms^2. This is the acceleration constant used when {@link #accelerate()}
 	 * is called.
 	 */
-	public static final double ACCELERATION = 5;
+	public static final double ACCELERATION = 1;
 	/**
 	 * U/ms^2
 	 */
-	public static final double DECELERATION = -5;	//may be changed to be different from acceleration
+	public static final double DECELERATION = -2;	//may be changed to be different from acceleration
 	public static final double TURN_AMOUNT = Math.PI / 15;
 	/**
 	 * Width and height of the car, used for painting and collision detection.
@@ -34,8 +34,9 @@ public class Car extends Rectangle2D.Double {
 	public static final double WIDTH = 40, HEIGHT = 70;
 	/**
 	 * An angle in radians.
+	 * The 0 should be the positive x axis direction.
 	 */
-	private double direction = - Math.PI / 2;
+	private double direction = 0;
 	/**
 	 * U/ms
 	 */
@@ -44,18 +45,30 @@ public class Car extends Rectangle2D.Double {
 	 * x and y coordinates of the center of the car
 	 */
 	private double xC, yC;
-	/**
-	 * Construct a car at (10, 10) with default width and height.
-	 */
+
 	private Sensor sensorL, sensorR, sensorF, sensorB, sensorFL, sensorFR, sensorLF, sensorRF;
 	private Sensor[] sensors = {
 			sensorL, sensorLF, sensorFL, sensorF, sensorFR, sensorRF, sensorR
 	};
 
-	public Car() {
-		super(100, 100, WIDTH, HEIGHT);
-		xC = getX() + WIDTH / 2D;
-		yC = getY() + HEIGHT / 2D;
+//	/**
+//	 * Construct a car at (100, 100) with default width and height.
+//	 */
+//	public Car() {
+//		this(100, 100);
+//	}
+
+	/**
+	 * Construct a car at the specified locations with default width and height.
+	 * @param x	the upper left x coordinate
+	 * @param y	the upper left y coordinate
+	 */
+	public Car(int x, int y) {
+		//using WIDTH then HEIGHT would draw a car with direction 0 facing up,
+		//as they are taken as the width and height of the rectangle
+		super(x, y, HEIGHT, WIDTH);
+		xC = getX() + HEIGHT / 2;
+		yC = getY() + WIDTH / 2;
 	}
 
 	/**
@@ -135,7 +148,7 @@ public class Car extends Rectangle2D.Double {
 		xC += getSpeed() * Math.cos(getDirection());
 		x = xC - WIDTH / 2;
 		yC += getSpeed() * Math.sin(getDirection());
-		y = y - HEIGHT / 2;
+		y = yC - HEIGHT / 2;
 //		turnRight();
 		//print state
 //		System.out.printf("Car: %f, %f%n", xC, yC);

@@ -17,7 +17,7 @@ public class Track extends JPanel implements ActionListener {
 	private static final Line2D[] TRACK_EDGES = {
 		//TODO write a drawing program to gather data
 	};
-	private Car car = new Car();
+	private final Car car = new Car(200, 200);
 
 	public static void main(String[] args) {
 		Track track = new Track();
@@ -37,18 +37,20 @@ public class Track extends JPanel implements ActionListener {
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		Graphics2D g2D = (Graphics2D) g;
-		//draw edges
+		//draw road edges
 		g2D.setColor(Color.BLACK);
 		for (Line2D edge : TRACK_EDGES)
 			g2D.draw(edge);
-		//draw car
-		g2D.setColor(Car.COLOR);
-//		g2D.rotate(car.getDirection(), car.getXCoordinate(), car.getYCoordinate());
+		//prepare rotation
 		AffineTransform rotation = new AffineTransform();
 		rotation.rotate(car.getDirection(), car.getXCoordinate(), car.getYCoordinate());
-		Car carTransformed = (Car) rotation.createTransformedShape(car);
+		//rotate car
+		Shape carTransformed = rotation.createTransformedShape(car);
+		//draw car
+		g2D.setColor(Car.DEFAULT_COLOR);
 		g2D.fill(carTransformed);
-		g2D.fill(new Rectangle2D.Double(300, 300, 50, 50));
+		g2D.setColor(Color.BLACK);
+		g2D.draw(carTransformed);	//draw an outline
 	}
 
 	@Override
@@ -62,8 +64,9 @@ public class Track extends JPanel implements ActionListener {
 			}
 		}
 		car.update();
-//		System.out.printf("xC: %f, yC: %f, D: %f, V: %f%n",
-//				car.getXCoordinate(), car.getYCoordinate(), car.getDirection(), car.getSpeed());
+		System.out.printf("xC: %f,\tyC: %f,\tD: %f,\tV: %f%n",
+				car.getXCoordinate(), car.getYCoordinate(), car.getDirection(), car.getSpeed());
 		repaint();
 	}
+	//TODO add keyboard listener for testing
 }

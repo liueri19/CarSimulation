@@ -12,8 +12,7 @@ simulation
     The world should be borderless, all coordinates will be based on an origin (instead of in relation to the edges). The world should be updated once every 10 milliseconds. All distances should be measured in Units(U).
     The car should contain the 8 sensors. The car should initially be placed on the origin.
     Unless handling graphics, all coordinates should have up as positive y, right as positive x.
-
-
+    Graphics should adapt to simulation coordinate system, not vice versa.
 
 network
     The neural network should run on a different tread than the main or the graphics thread.
