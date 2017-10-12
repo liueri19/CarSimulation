@@ -43,7 +43,7 @@ public class Track extends JPanel implements ActionListener {
 			g2D.draw(edge);
 		//prepare rotation
 		AffineTransform rotation = new AffineTransform();
-		rotation.rotate(car.getDirection(), car.getXCoordinate(), car.getYCoordinate());
+		rotation.rotate(-car.getDirection(), car.getXCoordinate(), -car.getYCoordinate());	//why direction negative?
 		//rotate car
 		Shape carTransformed = rotation.createTransformedShape(car);
 		//draw car
@@ -64,8 +64,8 @@ public class Track extends JPanel implements ActionListener {
 			}
 		}
 		car.update();
-		System.out.printf("xC: %f,\tyC: %f,\tD: %f,\tV: %f%n",
-				car.getXCoordinate(), car.getYCoordinate(), car.getDirection(), car.getSpeed());
+//		System.out.printf("xC: %f,\tyC: %f,\tx: %f,\ty: %f\tD: %f,\tV: %f%n",
+//				car.getXCoordinate(), car.getYCoordinate(), car.getX(), car.getY(), car.getDirection(), car.getSpeed());
 		repaint();
 	}
 	//TODO add keyboard listener for testing

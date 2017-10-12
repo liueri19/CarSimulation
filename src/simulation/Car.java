@@ -27,7 +27,7 @@ public class Car extends Rectangle2D.Double {
 	 * U/ms^2
 	 */
 	public static final double DECELERATION = -2;	//may be changed to be different from acceleration
-	public static final double TURN_AMOUNT = Math.PI / 15;
+	public static final double TURN_AMOUNT = Math.PI / 300;
 	/**
 	 * Width and height of the car, used for painting and collision detection.
 	 */
@@ -68,7 +68,7 @@ public class Car extends Rectangle2D.Double {
 		//as they are taken as the width and height of the rectangle
 		super(x, y, HEIGHT, WIDTH);
 		xC = getX() + HEIGHT / 2;
-		yC = getY() + WIDTH / 2;
+		yC = -getY() - WIDTH / 2;
 	}
 
 	/**
@@ -146,11 +146,9 @@ public class Car extends Rectangle2D.Double {
 	 */
 	protected synchronized void update() {
 		xC += getSpeed() * Math.cos(getDirection());
-		x = xC - WIDTH / 2;
+		x = xC - HEIGHT / 2;
 		yC += getSpeed() * Math.sin(getDirection());
-		y = yC - HEIGHT / 2;
-//		turnRight();
-		//print state
-//		System.out.printf("Car: %f, %f%n", xC, yC);
+		y = - yC - HEIGHT / 2;
+		turnRight();
 	}
 }
