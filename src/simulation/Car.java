@@ -22,12 +22,12 @@ public class Car extends Rectangle2D.Double {
 	 * In U/ms^2. This is the acceleration constant used when {@link #accelerate()}
 	 * is called.
 	 */
-	public static final double ACCELERATION = 1;
+	public static final double ACCELERATION = 0.1;
 	/**
 	 * U/ms^2
 	 */
-	public static final double DECELERATION = -2;	//may be changed to be different from acceleration
-	public static final double TURN_AMOUNT = Math.PI / 300;
+	public static final double DECELERATION = -0.2;	//may be changed to be different from acceleration
+	public static final double TURN_AMOUNT = Math.PI / 180;
 	/**
 	 * Width and height of the car, used for painting and collision detection.
 	 */
@@ -40,11 +40,16 @@ public class Car extends Rectangle2D.Double {
 	/**
 	 * U/ms
 	 */
-	private double speed = 1;
+	private double speed = 0;
 	/**
 	 * x and y coordinates of the center of the car
 	 */
 	private double xC, yC;
+
+	/**
+	 * For example, if accelerating is true, the car should accelerate every update
+	 */
+	private volatile boolean accelerating, decelerating, turningLeft, turningRight;
 
 	private Sensor sensorL, sensorR, sensorF, sensorB, sensorFL, sensorFR, sensorLF, sensorRF;
 	private Sensor[] sensors = {
@@ -106,6 +111,16 @@ public class Car extends Rectangle2D.Double {
 	}
 
 	/**
+	 * Set the center coordinate of this car to the specified coordinate.
+	 * @param x	the x coordinate to set the center of this car to
+	 * @param y	the y coordinate to set the center of this car to
+	 */
+	protected synchronized void setTo(int x, int y) {
+		xC = x;
+		yC = y;
+	}
+
+	/**
 	 * Accelerate this car by {@link #ACCELERATION}.
 	 * @return the speed after acceleration
 	 */
@@ -141,6 +156,39 @@ public class Car extends Rectangle2D.Double {
 		return  direction;
 	}
 
+	public boolean isAccelerating() {
+		return accelerating;
+	}
+
+	public void setAccelerating(boolean accelerating) {
+		this.accelerating = accelerating;
+	}
+
+	public boolean isDecelerating() {
+		return decelerating;
+	}
+
+	public void setDecelerating(boolean decelerating) {
+		this.decelerating = decelerating;
+	}
+
+	public boolean isTurningLeft() {
+		return turningLeft;
+	}
+
+	public void setTurningLeft(boolean turningLeft) {
+		this.turningLeft = turningLeft;
+	}
+
+	public boolean isTurningRight() {
+		return turningRight;
+	}
+
+	public void setTurningRight(boolean turningRight) {
+		this.turningRight = turningRight;
+	}
+
+
 	/**
 	 * Update the location of this car based on the current speed and direction.
 	 */
@@ -149,6 +197,14 @@ public class Car extends Rectangle2D.Double {
 		x = xC - HEIGHT / 2;
 		yC += getSpeed() * Math.sin(getDirection());
 		y = - yC - HEIGHT / 2;
-		turnRight();
+
+		if (accelerating)
+			accelerate();
+		if (decelerating)
+			decelerate();
+		if (turningLeft)
+			turnLeft();
+		if (turningRight)
+			turnRight();
 	}
 }
