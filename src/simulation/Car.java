@@ -6,7 +6,7 @@ import java.awt.geom.Rectangle2D;
 
 /**
  * Represents a car to be controlled. A car can only be turned
- * by a specific amount and accelerate or decelerate (as apposed to set
+ * by a specific amount and accelerate or brake (as apposed to set
  * to an arbitrary value).
  * <p>
  * A car has 8 sensors, one pointing straight forward, one straight back,
@@ -26,7 +26,7 @@ public class Car extends Rectangle2D.Double {
 	/**
 	 * U/ms^2
 	 */
-	public static final double DECELERATION = -0.2;	//may be changed to be different from acceleration
+	public static final double DECELERATION = 0.2;	//may be changed to be different from acceleration
 	public static final double TURN_AMOUNT = Math.PI / 180;
 	/**
 	 * Width and height of the car, used for painting and collision detection.
@@ -49,7 +49,7 @@ public class Car extends Rectangle2D.Double {
 	/**
 	 * For example, if accelerating is true, the car should accelerate every update
 	 */
-	private volatile boolean accelerating, decelerating, turningLeft, turningRight;
+	private volatile boolean accelerating, usingBrake, turningLeft, turningRight;
 
 	private Sensor sensorL, sensorR, sensorF, sensorB, sensorFL, sensorFR, sensorLF, sensorRF;
 	private Sensor[] sensors = {
@@ -133,8 +133,11 @@ public class Car extends Rectangle2D.Double {
 	 * Decelerate this car by {@link #DECELERATION}.
 	 * @return the speed after deceleration.
 	 */
-	public synchronized double decelerate() {
-		speed += DECELERATION;
+	public synchronized double brake() {
+		if (speed > DECELERATION)
+			speed -= DECELERATION;
+		else
+			speed = 0;
 		return speed;
 	}
 
@@ -164,12 +167,12 @@ public class Car extends Rectangle2D.Double {
 		this.accelerating = accelerating;
 	}
 
-	public boolean isDecelerating() {
-		return decelerating;
+	public boolean isUsingBrake() {
+		return usingBrake;
 	}
 
-	public void setDecelerating(boolean decelerating) {
-		this.decelerating = decelerating;
+	public void setUsingBrake(boolean usingBrake) {
+		this.usingBrake = usingBrake;
 	}
 
 	public boolean isTurningLeft() {
@@ -198,13 +201,13 @@ public class Car extends Rectangle2D.Double {
 		yC += getSpeed() * Math.sin(getDirection());
 		y = - yC - HEIGHT / 2;
 
-		if (accelerating)
+		if (isAccelerating())
 			accelerate();
-		if (decelerating)
-			decelerate();
-		if (turningLeft)
+		if (isUsingBrake())
+			brake();
+		if (isTurningLeft())
 			turnLeft();
-		if (turningRight)
+		if (isTurningRight())
 			turnRight();
 	}
 }

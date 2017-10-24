@@ -81,26 +81,33 @@ public class Track extends JPanel implements ActionListener, KeyListener {
 		/*
 		TODO fix bug
 		key register with multiple keys pressed malfunction
+		missing registration of key press events
 		 */
 		char keyChar = e.getKeyChar();
 		switch (keyChar) {
 			case 'a':
 			case 'A':
+//				System.out.println("A");
 				car.setTurningLeft(true);
 				break;
 			case 'd':
 			case 'D':
+//				System.out.println("D");
 				car.setTurningRight(true);
 				break;
 			case 'w':
 			case 'W':
+//				System.out.println("W");
 				car.setAccelerating(true);
 				break;
 			case 's':
 			case 'S':
-				car.setDecelerating(true);
+//				System.out.println("S");
+				car.setUsingBrake(true);
 				break;
 		}
+		System.out.print("PRESSED: ");
+		System.out.println(keyChar);
 	}
 
 	@Override
@@ -109,28 +116,36 @@ public class Track extends JPanel implements ActionListener, KeyListener {
 		switch (keyChar) {
 			case 'a':
 			case 'A':
+//				System.out.println("-A");
 				car.setTurningLeft(false);
 				break;
 			case 'd':
 			case 'D':
+//				System.out.println("-D");
 				car.setTurningRight(false);
 				break;
 			case 'w':
 			case 'W':
+//				System.out.println("-W");
 				car.setAccelerating(false);
 				break;
 			case 's':
 			case 'S':
-				car.setDecelerating(false);
+//				System.out.println("-S");
+				car.setUsingBrake(false);
 				break;
 		}
+		System.out.print("RELEASED: ");
+		System.out.println(keyChar);
 	}
 
 	@Override
 	public void keyTyped(KeyEvent e) {
 		char keyChar = e.getKeyChar();
 		if (keyChar == 'r') {    //reset car location
+//			System.out.println("R");
 			car.setTo(200, -200);
 		}
+		System.out.println(keyChar);
 	}
 }
