@@ -49,7 +49,7 @@ public class Car extends Rectangle2D.Double {
 	/**
 	 * For example, if accelerating is true, the car should accelerate every update
 	 */
-	private volatile boolean accelerating, usingBrake, turningLeft, turningRight;
+	private volatile boolean accelerating, decelerating, braking, turningLeft, turningRight;
 
 	private Sensor sensorL, sensorR, sensorF, sensorB, sensorFL, sensorFR, sensorLF, sensorRF;
 	private Sensor[] sensors = {
@@ -122,7 +122,7 @@ public class Car extends Rectangle2D.Double {
 
 	/**
 	 * Accelerate this car by {@link #ACCELERATION}.
-	 * @return the speed after acceleration
+	 * @return the velocity after acceleration
 	 */
 	public synchronized double accelerate() {
 		speed += ACCELERATION;
@@ -130,12 +130,25 @@ public class Car extends Rectangle2D.Double {
 	}
 
 	/**
-	 * Decelerate this car by {@link #DECELERATION}.
-	 * @return the speed after deceleration.
+	 * Decelerate this car by {@link #ACCELERATION}.
+	 * @return the velocity after deceleration
+	 */
+	public synchronized double decelerate() {
+		speed -= ACCELERATION;
+		return speed;
+	}
+
+	/**
+	 * Attempt to stop the car, decelerate or accelerate depending
+	 * on the current velocity.
+	 * Change the velocity toward 0 by {@link #DECELERATION}
+	 * @return	the velocity after brake
 	 */
 	public synchronized double brake() {
 		if (speed > DECELERATION)
 			speed -= DECELERATION;
+		else if (speed < -DECELERATION)
+			speed += DECELERATION;
 		else
 			speed = 0;
 		return speed;
@@ -167,12 +180,20 @@ public class Car extends Rectangle2D.Double {
 		this.accelerating = accelerating;
 	}
 
-	public boolean isUsingBrake() {
-		return usingBrake;
+	public boolean isDecelerating() {
+		return decelerating;
 	}
 
-	public void setUsingBrake(boolean usingBrake) {
-		this.usingBrake = usingBrake;
+	public void setDecelerating(boolean decelerating) {
+		this.decelerating = decelerating;
+	}
+
+	public boolean isBraking() {
+		return braking;
+	}
+
+	public void setBraking(boolean braking) {
+		this.braking = braking;
 	}
 
 	public boolean isTurningLeft() {
@@ -203,7 +224,9 @@ public class Car extends Rectangle2D.Double {
 
 		if (isAccelerating())
 			accelerate();
-		if (isUsingBrake())
+		if (isDecelerating())
+			decelerate();
+		if (isBraking())
 			brake();
 		if (isTurningLeft())
 			turnLeft();

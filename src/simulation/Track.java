@@ -83,69 +83,60 @@ public class Track extends JPanel implements ActionListener, KeyListener {
 		key register with multiple keys pressed malfunction
 		missing registration of key press events
 		 */
-		char keyChar = e.getKeyChar();
-		switch (keyChar) {
-			case 'a':
-			case 'A':
-//				System.out.println("A");
+		int keyCode = e.getKeyCode();
+		switch (keyCode) {
+			case KeyEvent.VK_A:
 				car.setTurningLeft(true);
 				break;
-			case 'd':
-			case 'D':
-//				System.out.println("D");
+			case KeyEvent.VK_D:
 				car.setTurningRight(true);
 				break;
-			case 'w':
-			case 'W':
-//				System.out.println("W");
+			case KeyEvent.VK_W:
 				car.setAccelerating(true);
 				break;
-			case 's':
-			case 'S':
-//				System.out.println("S");
-				car.setUsingBrake(true);
+			case KeyEvent.VK_S:
+				car.setDecelerating(true);
+				break;
+			case KeyEvent.VK_SPACE:
+				car.setBraking(true);
 				break;
 		}
-		System.out.print("PRESSED: ");
-		System.out.println(keyChar);
+		System.out.println(KeyEvent.getKeyText(keyCode));
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		char keyChar = e.getKeyChar();
-		switch (keyChar) {
-			case 'a':
-			case 'A':
-//				System.out.println("-A");
+		int keyCode = e.getKeyCode();
+		switch (keyCode) {
+			case KeyEvent.VK_A:
 				car.setTurningLeft(false);
 				break;
-			case 'd':
-			case 'D':
-//				System.out.println("-D");
+			case KeyEvent.VK_D:
 				car.setTurningRight(false);
 				break;
-			case 'w':
-			case 'W':
-//				System.out.println("-W");
+			case KeyEvent.VK_W:
 				car.setAccelerating(false);
 				break;
-			case 's':
-			case 'S':
-//				System.out.println("-S");
-				car.setUsingBrake(false);
+			case KeyEvent.VK_S:
+				car.setDecelerating(false);
+				break;
+			case KeyEvent.VK_SPACE:
+				car.setBraking(false);
 				break;
 		}
-		System.out.print("RELEASED: ");
-		System.out.println(keyChar);
+		System.out.println("-" + KeyEvent.getKeyText(keyCode));
+
+		//DEBUG
+		if (keyCode == KeyEvent.VK_I)
+			System.out.println("##INSPECT");
 	}
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-		char keyChar = e.getKeyChar();
-		if (keyChar == 'r') {    //reset car location
-//			System.out.println("R");
+		int keyCode = e.getKeyCode();
+		if (keyCode == 'r')    //reset car location
 			car.setTo(200, -200);
-		}
-		System.out.println(keyChar);
+
+		System.out.println(KeyEvent.getKeyText(keyCode));
 	}
 }
