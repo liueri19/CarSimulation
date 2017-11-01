@@ -12,6 +12,9 @@ import java.awt.geom.Rectangle2D;
  * A car has 8 sensors, one pointing straight forward, one straight back,
  * two on each side pointing PI/8 away from the straight forward, two each
  * side pointing PI/4 away from forward, last two pointing sideways.
+ * <p>
+ * The heading of the car is represented in radians, with 0 facing the positive
+ * x direction.
  */
 public class Car extends Rectangle2D.Double {
 	/**
@@ -33,10 +36,10 @@ public class Car extends Rectangle2D.Double {
 	 */
 	public static final double WIDTH = 40, HEIGHT = 70;
 	/**
-	 * An angle in radians.
-	 * The 0 should be the positive x axis direction.
+	 * An angle in radians. This is the actual direction the car is facing.
+	 * The 0 should be the positive x axis.
 	 */
-	private double direction = 0;
+	private double heading = 0;
 	/**
 	 * U/ms
 	 */
@@ -69,7 +72,7 @@ public class Car extends Rectangle2D.Double {
 	 * @param y	the upper left y coordinate
 	 */
 	public Car(int x, int y) {
-		//using WIDTH then HEIGHT would draw a car with direction 0 facing up,
+		//using WIDTH then HEIGHT would draw a car with heading 0 facing up,
 		//as they are taken as the width and height of the rectangle
 		super(x, y, HEIGHT, WIDTH);
 		xC = getX() + HEIGHT / 2;
@@ -86,10 +89,11 @@ public class Car extends Rectangle2D.Double {
 
 	/**
 	 * Get the current heading of the car in radians.
+	 * 0 should be the positive x axis.
 	 * @return the current heading
 	 */
-	public synchronized double getDirection() {
-		return direction;
+	public synchronized double getHeading() {
+		return heading;
 	}
 
 	/**
@@ -118,6 +122,10 @@ public class Car extends Rectangle2D.Double {
 	protected synchronized void setTo(int x, int y) {
 		xC = x;
 		yC = y;
+	}
+
+	protected synchronized void setHeading(double heading) {
+		this.heading = heading;
 	}
 
 	/**
@@ -155,21 +163,21 @@ public class Car extends Rectangle2D.Double {
 	}
 
 	/**
-	 * Turn this car by {@link #TURN_AMOUNT} radians to the left.
-	 * @return the updated direction
+	 * Turn steering by {@link #TURN_AMOUNT} radians to the left.
+	 * @return the updated heading
 	 */
 	public synchronized double turnLeft() {
-		direction += TURN_AMOUNT;
-		return direction;
+		heading += TURN_AMOUNT;
+		return heading;
 	}
 
 	/**
-	 * Turn this car by {@link #TURN_AMOUNT} radians to the right.
-	 * @return the updated direction
+	 * Turn steering by {@link #TURN_AMOUNT} radians to the right.
+	 * @return the updated heading
 	 */
 	public synchronized double turnRight() {
-		direction -= TURN_AMOUNT;
-		return  direction;
+		heading -= TURN_AMOUNT;
+		return heading;
 	}
 
 	public boolean isAccelerating() {
@@ -214,12 +222,12 @@ public class Car extends Rectangle2D.Double {
 
 
 	/**
-	 * Update the location of this car based on the current speed and direction.
+	 * Update the location of this car based on the current speed and heading.
 	 */
 	protected synchronized void update() {
-		xC += getSpeed() * Math.cos(getDirection());
+		xC += getSpeed() * Math.cos(getHeading());
 		x = xC - HEIGHT / 2;
-		yC += getSpeed() * Math.sin(getDirection());
+		yC += getSpeed() * Math.sin(getHeading());
 		y = - yC - HEIGHT / 2;
 
 		if (isAccelerating())
@@ -228,9 +236,23 @@ public class Car extends Rectangle2D.Double {
 			decelerate();
 		if (isBraking())
 			brake();
-		if (isTurningLeft())
-			turnLeft();
-		if (isTurningRight())
-			turnRight();
+
+		//if no speed, no turning
+		if (getSpeed() == 0)
+			return;
+		if (getSpeed() > 0) {	//normal forward
+			if (isTurningLeft())
+				turnLeft();
+			if (isTurningRight())
+				turnRight();
+		}
+		//reversing, special turning
+//		else if (getSpeed() < 0) {
+		else {
+			if (isTurningLeft())
+				turnRight();
+			if (isTurningRight())
+				turnLeft();
+		}
 	}
 }

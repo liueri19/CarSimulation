@@ -47,7 +47,7 @@ public class Track extends JPanel implements ActionListener, KeyListener {
 		//prepare rotation
 		//TODO fix bug: rotation seems to be centered around weird point
 		AffineTransform rotation =
-				AffineTransform.getRotateInstance(-car.getDirection(), 	//negative due to graphics coordinate plane
+				AffineTransform.getRotateInstance(-car.getHeading(), 	//negative due to graphics coordinate plane
 						car.getXCoordinate(), -car.getYCoordinate());
 		//rotate car
 		Shape carTransformed = rotation.createTransformedShape(car);
@@ -57,7 +57,7 @@ public class Track extends JPanel implements ActionListener, KeyListener {
 		g2D.setColor(Color.BLACK);
 		g2D.draw(carTransformed);	//draw an outline
 //		System.out.printf("xC: %f\tyC: %f\tx: %f\ty: %f\tD: %f\tV: %f%n",
-//				car.getXCoordinate(), car.getYCoordinate(), car.getX(), car.getY(), car.getDirection(), car.getSpeed());
+//				car.getXCoordinate(), car.getYCoordinate(), car.getX(), car.getY(), car.getHeading(), car.getSpeed());
 	}
 
 	@Override
@@ -72,58 +72,40 @@ public class Track extends JPanel implements ActionListener, KeyListener {
 		}
 		car.update();
 //		System.out.printf("xC: %f\tyC: %f\tx: %f\ty: %f\tD: %f\tV: %f%n",
-//				car.getXCoordinate(), car.getYCoordinate(), car.getX(), car.getY(), car.getDirection(), car.getSpeed());
+//				car.getXCoordinate(), car.getYCoordinate(), car.getX(), car.getY(), car.getHeading(), car.getSpeed());
 		repaint();
 	}
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		/*
-		TODO fix bug
-		key register with multiple keys pressed malfunction
-		missing registration of key press events
-		 */
+		//turns out letters and arrow keys have different key pressed event behavior
 		int keyCode = e.getKeyCode();
-		switch (keyCode) {
-			case KeyEvent.VK_A:
-				car.setTurningLeft(true);
-				break;
-			case KeyEvent.VK_D:
-				car.setTurningRight(true);
-				break;
-			case KeyEvent.VK_W:
-				car.setAccelerating(true);
-				break;
-			case KeyEvent.VK_S:
-				car.setDecelerating(true);
-				break;
-			case KeyEvent.VK_SPACE:
-				car.setBraking(true);
-				break;
-		}
+		if (keyCode == KeyEvent.VK_LEFT)
+			car.setTurningLeft(true);
+		else if (keyCode == KeyEvent.VK_RIGHT)
+			car.setTurningRight(true);
+		else if (keyCode == KeyEvent.VK_UP)
+			car.setAccelerating(true);
+		else if (keyCode == KeyEvent.VK_DOWN)
+			car.setDecelerating(true);
+		else if (keyCode == KeyEvent.VK_SHIFT)
+			car.setBraking(true);
 		System.out.println(KeyEvent.getKeyText(keyCode));
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
 		int keyCode = e.getKeyCode();
-		switch (keyCode) {
-			case KeyEvent.VK_A:
-				car.setTurningLeft(false);
-				break;
-			case KeyEvent.VK_D:
-				car.setTurningRight(false);
-				break;
-			case KeyEvent.VK_W:
-				car.setAccelerating(false);
-				break;
-			case KeyEvent.VK_S:
-				car.setDecelerating(false);
-				break;
-			case KeyEvent.VK_SPACE:
-				car.setBraking(false);
-				break;
-		}
+		if (keyCode == KeyEvent.VK_LEFT)
+			car.setTurningLeft(false);
+		else if (keyCode == KeyEvent.VK_RIGHT)
+			car.setTurningRight(false);
+		else if (keyCode == KeyEvent.VK_UP)
+			car.setAccelerating(false);
+		else if (keyCode == KeyEvent.VK_DOWN)
+			car.setDecelerating(false);
+		else if (keyCode == KeyEvent.VK_SHIFT)
+			car.setBraking(false);
 		System.out.println("-" + KeyEvent.getKeyText(keyCode));
 
 		//DEBUG
@@ -133,10 +115,7 @@ public class Track extends JPanel implements ActionListener, KeyListener {
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-		int keyCode = e.getKeyCode();
-		if (keyCode == 'r')    //reset car location
+		if (e.getKeyChar() == 'r')    //reset car location
 			car.setTo(200, -200);
-
-		System.out.println(KeyEvent.getKeyText(keyCode));
 	}
 }
