@@ -1,17 +1,19 @@
 package simulation;
 
+import network.Network;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * This class is the ground where cars should be driving on.
  */
-public class Track extends JPanel implements ActionListener, KeyListener {
+public class Track extends JPanel implements KeyListener {
 	public static final int WIDTH = 800, HEIGHT = 600;
 	/**
 	 * Defines the edges of the track.
@@ -21,10 +23,11 @@ public class Track extends JPanel implements ActionListener, KeyListener {
 	};
 	private final Car car = new Car(200, 200);
 
+	private volatile boolean stop = false;	//for stopping simulation and network
+
 	public static void main(String[] args) {
 		Track track = new Track();
 		JFrame frame = new JFrame("Simulation");
-//		frame.setSize(1080, 720);
 		track.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		track.setBackground(Color.LIGHT_GRAY);
 		frame.add(track);
@@ -32,8 +35,37 @@ public class Track extends JPanel implements ActionListener, KeyListener {
 		frame.pack();
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		frame.setVisible(true);
-		Timer clock = new Timer(10, track);
-		clock.start();
+
+		Network network = new Network(track.car);
+
+		final long updateInterval = 10;
+		//one for simulation update, one for network
+		//this design may be changed to merge those two threads
+		ExecutorService executor = Executors.newFixedThreadPool(2);
+		//for simulation
+		executor.submit(() -> {
+			while (!track.stop) {
+				track.updateSimulation();
+				try {
+					Thread.sleep(updateInterval);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		//for network
+		executor.submit(() -> {
+			while (!track.stop) {
+				network.act();
+				try {
+					Thread.sleep(updateInterval);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+
+		executor.shutdown();
 	}
 
 	@Override
@@ -56,13 +88,12 @@ public class Track extends JPanel implements ActionListener, KeyListener {
 		g2D.fill(carTransformed);
 		g2D.setColor(Color.BLACK);
 		g2D.draw(carTransformed);	//draw an outline
-//		System.out.printf("xC: %f\tyC: %f\tx: %f\ty: %f\tD: %f\tV: %f%n",
-//				car.getXCoordinate(), car.getYCoordinate(), car.getX(), car.getY(), car.getHeading(), car.getSpeed());
 	}
 
-	@Override
-	public void actionPerformed(ActionEvent e) {
-//		System.out.println("Clock update");
+	/**
+	 * Check if car crashed, update car, update graphics.
+	 */
+	public void updateSimulation() {
 		//could be replaced with sensor checks
 		for (Line2D line : TRACK_EDGES) {
 			if (car.intersectsLine(line)) {
@@ -71,8 +102,7 @@ public class Track extends JPanel implements ActionListener, KeyListener {
 			}
 		}
 		car.update();
-//		System.out.printf("xC: %f\tyC: %f\tx: %f\ty: %f\tD: %f\tV: %f%n",
-//				car.getXCoordinate(), car.getYCoordinate(), car.getX(), car.getY(), car.getHeading(), car.getSpeed());
+
 		repaint();
 	}
 

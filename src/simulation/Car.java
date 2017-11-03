@@ -246,7 +246,7 @@ public class Car extends Rectangle2D.Double {
 			if (isTurningRight())
 				turnRight();
 		}
-		//reversing, special turning
+		//reversing requires special turning
 //		else if (getSpeed() < 0) {
 		else {
 			if (isTurningLeft())
