@@ -1,0 +1,7 @@
+This file is for keeping track of stuff done in the current commit
+
+change simulation clock implementation
+add pause
+basics for reading writing network
+add max speed limits
+fix bug: rotation seems to be centered around weird point

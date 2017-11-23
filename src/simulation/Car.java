@@ -25,11 +25,11 @@ public class Car extends Rectangle2D.Double {
 	 * In U/ms^2. This is the acceleration constant used when {@link #accelerate()}
 	 * is called.
 	 */
-	public static final double ACCELERATION = 0.1;
+	public static final double ACCELERATION = 0.05;
 	/**
 	 * U/ms^2
 	 */
-	public static final double DECELERATION = 0.2;	//may be changed to be different from acceleration
+	public static final double DECELERATION = 0.1;	//may be changed to be different from acceleration
 	public static final double TURN_AMOUNT = Math.PI / 180;
 	/**
 	 * Width and height of the car, used for painting and collision detection.
@@ -44,6 +44,7 @@ public class Car extends Rectangle2D.Double {
 	 * U/ms
 	 */
 	private double speed = 0;
+	public static final double MAX_FORWARD_SPEED = 3.5, MAX_BACKWARD_SPEED = -2.5;
 	/**
 	 * x and y coordinates of the center of the car
 	 */
@@ -58,13 +59,6 @@ public class Car extends Rectangle2D.Double {
 	private Sensor[] sensors = {
 			sensorL, sensorLF, sensorFL, sensorF, sensorFR, sensorRF, sensorR
 	};
-
-//	/**
-//	 * Construct a car at (100, 100) with default width and height.
-//	 */
-//	public Car() {
-//		this(100, 100);
-//	}
 
 	/**
 	 * Construct a car at the specified locations with default width and height.
@@ -133,7 +127,8 @@ public class Car extends Rectangle2D.Double {
 	 * @return the velocity after acceleration
 	 */
 	public synchronized double accelerate() {
-		speed += ACCELERATION;
+		if (getSpeed() < MAX_FORWARD_SPEED)
+			speed += ACCELERATION;
 		return speed;
 	}
 
@@ -142,7 +137,8 @@ public class Car extends Rectangle2D.Double {
 	 * @return the velocity after deceleration
 	 */
 	public synchronized double decelerate() {
-		speed -= ACCELERATION;
+		if (getSpeed() > MAX_BACKWARD_SPEED)
+			speed -= ACCELERATION;
 		return speed;
 	}
 
@@ -153,9 +149,9 @@ public class Car extends Rectangle2D.Double {
 	 * @return	the velocity after brake
 	 */
 	public synchronized double brake() {
-		if (speed > DECELERATION)
+		if (getSpeed() > DECELERATION)
 			speed -= DECELERATION;
-		else if (speed < -DECELERATION)
+		else if (getSpeed() < -DECELERATION)
 			speed += DECELERATION;
 		else
 			speed = 0;
@@ -228,7 +224,7 @@ public class Car extends Rectangle2D.Double {
 		xC += getSpeed() * Math.cos(getHeading());
 		x = xC - HEIGHT / 2;
 		yC += getSpeed() * Math.sin(getHeading());
-		y = - yC - HEIGHT / 2;
+		y = -yC - WIDTH / 2;
 
 		if (isAccelerating())
 			accelerate();
@@ -246,7 +242,7 @@ public class Car extends Rectangle2D.Double {
 			if (isTurningRight())
 				turnRight();
 		}
-		//reversing requires special turning
+		//reversing requires different turning
 //		else if (getSpeed() < 0) {
 		else {
 			if (isTurningLeft())
@@ -255,4 +251,6 @@ public class Car extends Rectangle2D.Double {
 				turnLeft();
 		}
 	}
+
+
 }

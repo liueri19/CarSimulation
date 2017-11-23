@@ -24,6 +24,9 @@ public class Track extends JPanel implements KeyListener {
 	private final Car car = new Car(200, 200);
 
 	private volatile boolean stop = false;	//for stopping simulation and network
+	private volatile boolean pause = false;	//for pausing game clock
+	//shift entire world right and up by the following x and y values
+	private int shiftX, shiftY;
 
 	public static void main(String[] args) {
 		Track track = new Track();
@@ -41,15 +44,16 @@ public class Track extends JPanel implements KeyListener {
 		final long updateInterval = 10;
 		//one for simulation update, one for network
 		//this design may be changed to merge those two threads
-		ExecutorService executor = Executors.newFixedThreadPool(2);
+		ExecutorService executor = Executors.newSingleThreadExecutor();
 		//for simulation
 		executor.submit(() -> {
+			long last = System.nanoTime();
 			while (!track.stop) {
-				track.updateSimulation();
-				try {
-					Thread.sleep(updateInterval);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+				if (track.pause)
+					continue;
+				if (System.nanoTime() - last >= 10000000) {	//if 10 milliseconds passed
+					track.updateSimulation();
+					last = System.nanoTime();
 				}
 			}
 		});
@@ -77,7 +81,6 @@ public class Track extends JPanel implements KeyListener {
 		for (Line2D edge : TRACK_EDGES)
 			g2D.draw(edge);
 		//prepare rotation
-		//TODO fix bug: rotation seems to be centered around weird point
 		AffineTransform rotation =
 				AffineTransform.getRotateInstance(-car.getHeading(), 	//negative due to graphics coordinate plane
 						car.getXCoordinate(), -car.getYCoordinate());
@@ -88,6 +91,12 @@ public class Track extends JPanel implements KeyListener {
 		g2D.fill(carTransformed);
 		g2D.setColor(Color.BLACK);
 		g2D.draw(carTransformed);	//draw an outline
+
+		//DEBUG
+		g2D.fill(new Rectangle2D.Double(car.getXCoordinate()-0.5, -car.getYCoordinate()-0.5, 1, 1));
+		System.out.printf("X: %f\tY: %f%n", car.getXCoordinate(), -car.getYCoordinate());
+		g2D.fill(new Rectangle2D.Double(car.getX()-0.5, car.getY()-0.5, 1, 1));
+		g2D.draw(new Rectangle2D.Double(car.getX(), car.getY(), car.getWidth(), car.getHeight()));
 	}
 
 	/**
@@ -145,7 +154,10 @@ public class Track extends JPanel implements KeyListener {
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-		if (e.getKeyChar() == 'r')    //reset car location
+		char keyChar = e.getKeyChar();
+		if (keyChar == 'r')    //reset car location
 			car.setTo(200, -200);
+		else if (keyChar == 'p')
+			pause = !pause;
 	}
 }
