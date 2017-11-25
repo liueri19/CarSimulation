@@ -21,8 +21,9 @@ public class Track extends JPanel implements KeyListener {
 	private static final Line2D[] TRACK_EDGES = {
 		//TODO write a drawing program to gather data
 	};
-	private final Car car = new Car(200, 200);
+	private final Car car = new Car(this, 200, 200);
 
+	//stop and pause must not be modified outside main thread
 	private volatile boolean stop = false;	//for stopping simulation and network
 	private volatile boolean pause = false;	//for pausing game clock
 	//shift entire world right and up by the following x and y values
@@ -93,16 +94,44 @@ public class Track extends JPanel implements KeyListener {
 		g2D.draw(carTransformed);	//draw an outline
 
 		//DEBUG
-		g2D.fill(new Rectangle2D.Double(car.getXCoordinate()-0.5, -car.getYCoordinate()-0.5, 1, 1));
-		System.out.printf("X: %f\tY: %f%n", car.getXCoordinate(), -car.getYCoordinate());
-		g2D.fill(new Rectangle2D.Double(car.getX()-0.5, car.getY()-0.5, 1, 1));
-		g2D.draw(new Rectangle2D.Double(car.getX(), car.getY(), car.getWidth(), car.getHeight()));
+		drawGrid(g2D);
+//		g2D.fill(new Rectangle2D.Double(car.getXCoordinate()-0.5, -car.getYCoordinate()-0.5, 1, 1));
+//		System.out.printf("X: %f\tY: %f%n", car.getXCoordinate(), -car.getYCoordinate());
+//		g2D.fill(new Rectangle2D.Double(car.getX()-0.5, car.getY()-0.5, 1, 1));
+//		g2D.draw(new Rectangle2D.Double(car.getX(), car.getY(), car.getWidth(), car.getHeight()));
+	}
+
+	/**
+	 * Draw a grid static to the world as a reference to the coordinate system.
+	 */
+	private void drawGrid(Graphics2D g) {
+		//TODO implement draw grid
+	}
+
+	Line2D[] getTrackEdges() {
+		return TRACK_EDGES;
+	}
+
+	/**
+	 * Check if the program has terminated.
+	 * @return	true if the program has stopped, false otherwise
+	 */
+	public boolean isStopped() {
+		return stop;
+	}
+
+	/**
+	 * Check if the program has paused.
+	 * @return	true if the program has paused, false otherwise
+	 */
+	public boolean isPaused() {
+		return pause;
 	}
 
 	/**
 	 * Check if car crashed, update car, update graphics.
 	 */
-	public void updateSimulation() {
+	private void updateSimulation() {
 		//could be replaced with sensor checks
 		for (Line2D line : TRACK_EDGES) {
 			if (car.intersectsLine(line)) {

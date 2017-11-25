@@ -1,8 +1,9 @@
 package simulation;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Represents a car to be controlled. A car can only be turned
@@ -55,22 +56,36 @@ public class Car extends Rectangle2D.Double {
 	 */
 	private volatile boolean accelerating, decelerating, braking, turningLeft, turningRight;
 
-	private Sensor sensorL, sensorR, sensorF, sensorB, sensorFL, sensorFR, sensorLF, sensorRF;
-	private Sensor[] sensors = {
-			sensorL, sensorLF, sensorFL, sensorF, sensorFR, sensorRF, sensorR
-	};
+	private final Sensor sensorL, sensorR, sensorF, sensorB, sensorFL, sensorFR, sensorLF, sensorRF;
+	private final List<Sensor> sensors = new ArrayList<>();
+	private final Track track;
 
 	/**
 	 * Construct a car at the specified locations with default width and height.
 	 * @param x	the upper left x coordinate
 	 * @param y	the upper left y coordinate
 	 */
-	public Car(int x, int y) {
+	public Car(Track track, int x, int y) {
 		//using WIDTH then HEIGHT would draw a car with heading 0 facing up,
 		//as they are taken as the width and height of the rectangle
 		super(x, y, HEIGHT, WIDTH);
 		xC = getX() + HEIGHT / 2;
 		yC = -getY() - WIDTH / 2;
+		this.track = track;
+
+		//add sensors
+		sensors.add(sensorL = new Sensor(this, Math.PI/2));	//+90
+		sensors.add(sensorR = new Sensor(this, -Math.PI/2));	//-90
+		sensors.add(sensorF = new Sensor(this, 0));	//forward 0
+		sensors.add(sensorB = new Sensor(this, Math.PI));	//backward 180
+		sensors.add(sensorFL = new Sensor(this, Math.PI/6));	//+30
+		sensors.add(sensorFR = new Sensor(this, -Math.PI/6	));	//-30
+		sensors.add(sensorLF = new Sensor(this, Math.PI/3));	//+60
+		sensors.add(sensorRF = new Sensor(this, -Math.PI/3));	//-60
+	}
+
+	public Track getTrack() {
+		return track;
 	}
 
 	/**
@@ -92,7 +107,7 @@ public class Car extends Rectangle2D.Double {
 
 	/**
 	 * Returns the x coordinate of the center of this car in relation to
-	 * the origin. Not to be confused with {@link JComponent#getX()}.
+	 * the origin.
 	 * @return returns the x coordinate in relation to the origin
 	 */
 	public synchronized double getXCoordinate() {
@@ -101,7 +116,7 @@ public class Car extends Rectangle2D.Double {
 
 	/**
 	 * Returns the y coordinate of the center of this car in relation to
-	 * the origin. Not to be confused with {@link JComponent#getY()}.
+	 * the origin.
 	 * @return returns the y coordinate in relation to the origin
 	 */
 	public synchronized double getYCoordinate() {
@@ -250,7 +265,6 @@ public class Car extends Rectangle2D.Double {
 			if (isTurningRight())
 				turnLeft();
 		}
+		heading %= 2*Math.PI;
 	}
-
-
 }
