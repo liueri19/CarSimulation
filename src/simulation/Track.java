@@ -7,8 +7,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 /**
  * This class is the ground where cars should be driving on.
@@ -26,8 +25,6 @@ public class Track extends JPanel implements KeyListener {
 	//stop and pause must not be modified outside main thread
 	private volatile boolean stop = false;	//for stopping simulation and network
 	private volatile boolean pause = false;	//for pausing game clock
-	//shift entire world right and up by the following x and y values
-	private int shiftX, shiftY;
 
 	public static void main(String[] args) {
 		Track track = new Track();
@@ -45,9 +42,9 @@ public class Track extends JPanel implements KeyListener {
 		final long updateInterval = 10;
 		//one for simulation update, one for network
 		//this design may be changed to merge those two threads
-		ExecutorService executor = Executors.newSingleThreadExecutor();
+		ExecutorService executor = Executors.newFixedThreadPool(2);
 		//for simulation
-		executor.submit(() -> {
+		Future<?> clockFuture = executor.submit(() -> {
 			long last = System.nanoTime();
 			while (!track.stop) {
 				if (track.pause)
@@ -70,28 +67,24 @@ public class Track extends JPanel implements KeyListener {
 			}
 		});
 
-		executor.shutdown();
+		try {
+			clockFuture.get();
+			executor.shutdown();
+			executor.awaitTermination(1, TimeUnit.SECONDS);
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
+		}
+		System.exit(0);
 	}
 
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		Graphics2D g2D = (Graphics2D) g;
-		//draw road edges
-		g2D.setColor(Color.BLACK);
-		for (Line2D edge : TRACK_EDGES)
-			g2D.draw(edge);
-		//prepare rotation
-		AffineTransform rotation =
-				AffineTransform.getRotateInstance(-car.getHeading(), 	//negative due to graphics coordinate plane
-						car.getXCoordinate(), -car.getYCoordinate());
-		//rotate car
-		Shape carTransformed = rotation.createTransformedShape(car);
-		//draw car
-		g2D.setColor(Car.DEFAULT_COLOR);
-		g2D.fill(carTransformed);
-		g2D.setColor(Color.BLACK);
-		g2D.draw(carTransformed);	//draw an outline
+		//road edges
+		drawEdges(g2D);
+		//car
+		drawCar(g2D);
 
 		//DEBUG
 		drawGrid(g2D);
@@ -99,6 +92,26 @@ public class Track extends JPanel implements KeyListener {
 //		System.out.printf("X: %f\tY: %f%n", car.getXCoordinate(), -car.getYCoordinate());
 //		g2D.fill(new Rectangle2D.Double(car.getX()-0.5, car.getY()-0.5, 1, 1));
 //		g2D.draw(new Rectangle2D.Double(car.getX(), car.getY(), car.getWidth(), car.getHeight()));
+	}
+
+	private void drawEdges(Graphics2D g) {
+		g.setColor(Color.BLACK);
+		for (Line2D edge : TRACK_EDGES)
+			g.draw(edge);
+	}
+
+	private void drawCar(Graphics2D g) {
+		//prepare rotation
+		AffineTransform rotation =
+				AffineTransform.getRotateInstance(-car.getHeading(), 	//negative due to graphics coordinate plane
+						car.getXCoordinate(), -car.getYCoordinate());
+		//rotate car
+		Shape carTransformed = rotation.createTransformedShape(car);
+		//draw car
+		g.setColor(Car.DEFAULT_COLOR);
+		g.fill(carTransformed);
+		g.setColor(Color.BLACK);
+		g.draw(carTransformed);	//draw an outline
 	}
 
 	/**
@@ -188,5 +201,7 @@ public class Track extends JPanel implements KeyListener {
 			car.setTo(200, -200);
 		else if (keyChar == 'p')
 			pause = !pause;
+		else if (keyChar == 'q')	//quit
+			stop = true;
 	}
 }
