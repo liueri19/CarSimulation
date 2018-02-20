@@ -21,4 +21,4 @@ network
     Classes should build a simple neural network, taking inputs from the classes of the simulation class and return outputs back to the classes in the simulation class.
     Fitness of a network should be based on the total time consumed to complete the track and the amount time the car drove out of the track, in both cases a lower amount of time result in a higher fitness.
     The network need to be able to load configuration from file and write configuration to file.
-    Output nodes match the controls of Car (accelerate, decelerate, brake, turning).
+    Output hiddens match the controls of Car (accelerate, decelerate, brake, turning).

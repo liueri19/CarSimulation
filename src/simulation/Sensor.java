@@ -23,6 +23,7 @@ public class Sensor {
 	//the range of the sensor
 	private static final double RANGE = 500;
 
+	//update this sensor
 	private final ExecutorService executor = Executors.newSingleThreadExecutor();
 	private volatile double distance;
 

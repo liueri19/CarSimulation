@@ -5,6 +5,6 @@ import java.util.List;
 /**
  * Represents a single neuron.
  */
-public class Node {
+public abstract class Node {
 	private List<List<Connection>> prevConnections, nextConnections;
 }

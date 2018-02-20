@@ -37,7 +37,7 @@ public class Track extends JPanel implements KeyListener {
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 
-		Network network = new Network(track.car);
+		Network network = new Network();
 
 		final long updateInterval = 10;
 		//one for simulation update, one for network
@@ -58,7 +58,7 @@ public class Track extends JPanel implements KeyListener {
 		//for network
 		executor.submit(() -> {
 			while (!track.stop) {
-				network.act();
+				network.compute(track.car.getReadings());
 				try {
 					Thread.sleep(updateInterval);
 				} catch (InterruptedException e) {

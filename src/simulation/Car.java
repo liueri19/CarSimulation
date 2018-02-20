@@ -2,6 +2,7 @@ package simulation;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
+import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -229,6 +230,14 @@ public class Car extends Rectangle2D.Double {
 
 	public void setTurningRight(boolean turningRight) {
 		this.turningRight = turningRight;
+	}
+	
+	public List<Sensor> getSensors() { return Collections.unmodifiableList(sensors); }
+	
+	public List<java.lang.Double> getReadings() {	//conflicting class names
+		List<java.lang.Double> values = new ArrayList<>();
+		sensors.forEach((sensor -> values.add(sensor.measure())));
+		return values;
 	}
 
 
