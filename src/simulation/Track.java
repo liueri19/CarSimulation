@@ -14,20 +14,31 @@ import java.util.concurrent.*;
  */
 public class Track extends JPanel implements KeyListener {
 	public static final int WIDTH = 800, HEIGHT = 600;
+	private static Track INSTANCE = null;
 	/**
 	 * Defines the edges of the track.
 	 */
 	private static final Line2D[] TRACK_EDGES = {
-		//TODO write a drawing program to gather data
+		//TODO convert picture to data?
 	};
-	private final Car car = new Car(this, 200, 200);
+	private final Car car = new Car(this, 0, 0);
 
 	//stop and pause must not be modified outside main thread
 	private volatile boolean stop = false;	//for stopping simulation and network
 	private volatile boolean pause = false;	//for pausing game clock
 
+
+	private Track() {
+	}
+
+	public static synchronized Track getInstance() {
+		if (INSTANCE == null)
+			INSTANCE = new Track();
+		return INSTANCE;
+	}
+
 	public static void main(String[] args) {
-		Track track = new Track();
+		Track track = getInstance();
 		JFrame frame = new JFrame("Simulation");
 		track.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		track.setBackground(Color.LIGHT_GRAY);
@@ -67,7 +78,7 @@ public class Track extends JPanel implements KeyListener {
 			}
 		});
 
-		try {
+		try {	//shutdown
 			clockFuture.get();
 			executor.shutdown();
 			executor.awaitTermination(1, TimeUnit.SECONDS);
@@ -86,8 +97,9 @@ public class Track extends JPanel implements KeyListener {
 		//car
 		drawCar(g2D);
 
-		//DEBUG
 		drawGrid(g2D);
+
+		//DEBUG
 //		g2D.fill(new Rectangle2D.Double(car.getXCoordinate()-0.5, -car.getYCoordinate()-0.5, 1, 1));
 //		System.out.printf("X: %f\tY: %f%n", car.getXCoordinate(), -car.getYCoordinate());
 //		g2D.fill(new Rectangle2D.Double(car.getX()-0.5, car.getY()-0.5, 1, 1));
