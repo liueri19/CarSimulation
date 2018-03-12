@@ -36,7 +36,7 @@ public class Car extends Rectangle2D.Double {
 	/**
 	 * Width and height of the car, used for painting and collision detection.
 	 */
-	public static final double WIDTH = 40, HEIGHT = 70;
+	public static final double WIDTH = 40, LENGTH = 70;
 	/**
 	 * An angle in radians. This is the actual direction the car is facing.
 	 * The 0 should be the positive x axis.
@@ -63,15 +63,15 @@ public class Car extends Rectangle2D.Double {
 
 	/**
 	 * Construct a car at the specified locations with default width and height.
-	 * @param x	the upper left x coordinate
-	 * @param y	the upper left y coordinate
+	 * @param x	the center x coordinate
+	 * @param y	the center y coordinate
 	 */
 	public Car(Track track, int x, int y) {
-		//using WIDTH then HEIGHT would draw a car with heading 0 facing up,
+		//using WIDTH then LENGTH would draw a car with heading 0 facing up,
 		//as they are taken as the width and height of the rectangle
-		super(x, y, HEIGHT, WIDTH);
-		xC = getX() + HEIGHT / 2;
-		yC = -getY() - WIDTH / 2;
+		super(x - LENGTH/2, -y - WIDTH/2, LENGTH, WIDTH);
+		xC = 0;
+		yC = 0;
 		this.track = track;
 
 		//add sensors
@@ -246,9 +246,11 @@ public class Car extends Rectangle2D.Double {
 	 */
 	protected synchronized void update() {
 		xC += getSpeed() * Math.cos(getHeading());
-		x = xC - HEIGHT / 2;
 		yC += getSpeed() * Math.sin(getHeading());
-		y = -yC - WIDTH / 2;
+		
+		//don't update the graphics, keep car in the center
+//		x = xC - LENGTH / 2;
+//		y = -yC - WIDTH / 2;
 
 		if (isAccelerating())
 			accelerate();

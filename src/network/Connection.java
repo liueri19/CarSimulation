@@ -2,6 +2,7 @@ package network;
 
 /**
  * Represents a connection between 2 neurons.
+ * A connection has a weight.
  */
 public class Connection {
 	private Node prevNode, nextNode;
