@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 
+import static java.lang.Double.MAX_VALUE;
+
 /**
  * Represents a car to be controlled. A car can only be turned
  * by a specific amount and accelerate or brake (as apposed to set
@@ -46,7 +48,7 @@ public class Car extends Rectangle2D.Double {
 	 * U/ms
 	 */
 	private double speed = 0;
-	public static final double MAX_FORWARD_SPEED = 3.5, MAX_BACKWARD_SPEED = -2.5;
+	public static final double MAX_FORWARD_SPEED = MAX_VALUE, MAX_BACKWARD_SPEED = -MAX_VALUE;
 	/**
 	 * x and y coordinates of the center of the car
 	 */
@@ -63,8 +65,8 @@ public class Car extends Rectangle2D.Double {
 
 	/**
 	 * Construct a car at the specified locations with default width and height.
-	 * @param x	the center x coordinate
-	 * @param y	the center y coordinate
+	 * @param x	the x coordinate of the center
+	 * @param y	the y coordinate of the center
 	 */
 	public Car(Track track, int x, int y) {
 		//using WIDTH then LENGTH would draw a car with heading 0 facing up,

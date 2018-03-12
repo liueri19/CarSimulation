@@ -18,11 +18,13 @@ public class Track extends JPanel implements KeyListener {
 	//initial x and y locations of the center of the car
 	private static final int INITIAL_X = WIDTH /2, INITIAL_Y = -HEIGHT /2;
 	
+	private static Track INSTANCE = null;
+	
 	/**
 	 * Defines the edges of the track.
 	 */
 	private static final Line2D[] TRACK_EDGES = {
-		//TODO write a drawing program to gather data
+		//TODO convert picture to data?
 	};
 	
 	private final Car CAR = new Car(this, INITIAL_X, INITIAL_Y);
@@ -32,8 +34,18 @@ public class Track extends JPanel implements KeyListener {
 	private volatile boolean pause = false;	//for pausing game clock
 	private volatile boolean verbose = false;	//for verbose output
 
+
+	private Track() {
+	}
+
+	public static synchronized Track getInstance() {
+		if (INSTANCE == null)
+			INSTANCE = new Track();
+		return INSTANCE;
+	}
+
 	public static void main(String[] args) {
-		Track track = new Track();
+		Track track = getInstance();
 		JFrame frame = new JFrame("Simulation");
 		track.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		track.setBackground(Color.LIGHT_GRAY);
@@ -73,7 +85,7 @@ public class Track extends JPanel implements KeyListener {
 			}
 		});
 
-		try {
+		try {	//shutdown
 			clockFuture.get();
 			executor.shutdown();
 			executor.awaitTermination(1, TimeUnit.SECONDS);
@@ -201,7 +213,7 @@ public class Track extends JPanel implements KeyListener {
 		//could be replaced with sensor checks
 		for (Line2D line : TRACK_EDGES) {
 			if (CAR.intersectsLine(line)) {
-				//CAR crashed
+				//car crashed
 				break;
 			}
 		}
