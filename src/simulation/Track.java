@@ -7,7 +7,15 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.*;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Collections;
 import java.util.concurrent.*;
+import java.util.List;
+import java.util.ArrayList;
+
 
 /**
  * This class is the ground where cars should be driving on.
@@ -23,9 +31,7 @@ public class Track extends JPanel implements KeyListener {
 	/**
 	 * Defines the edges of the track.
 	 */
-	private static final Line2D[] TRACK_EDGES = {
-		//TODO convert picture to data?
-	};
+	private final List<Line2D> TRACK_EDGES;
 	
 	private final Car CAR = new Car(this, INITIAL_X, INITIAL_Y);
 
@@ -35,17 +41,25 @@ public class Track extends JPanel implements KeyListener {
 	private volatile boolean verbose = false;	//for verbose output
 
 
-	private Track() {
+	private Track(List<Line2D> edges) {
+		TRACK_EDGES = edges;
 	}
 
-	public static synchronized Track getInstance() {
+	public static synchronized Track getInstance(List<Line2D> edges) {
 		if (INSTANCE == null)
-			INSTANCE = new Track();
+			INSTANCE = new Track(edges);
 		return INSTANCE;
 	}
 
 	public static void main(String[] args) {
-		Track track = getInstance();
+		final List<Line2D> edges;
+		if (args.length == 0)
+			edges = Collections.emptyList();
+		else
+			edges = readMapConfig(args[0]);
+		Track track = getInstance(edges);
+
+
 		JFrame frame = new JFrame("Simulation");
 		track.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		track.setBackground(Color.LIGHT_GRAY);
@@ -94,6 +108,28 @@ public class Track extends JPanel implements KeyListener {
 		}
 		System.exit(0);
 	}
+
+
+	//////////////////////////////
+	//utility method
+
+	private static List<Line2D> readMapConfig(String fileName) {	//TODO implement read map config
+		final List<Line2D> edges = new ArrayList<>();
+
+		try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+
+		}
+		catch (FileNotFoundException e) {
+			System.err.printf("File '%s' not found%n", fileName);
+		}
+		catch (IOException e) {
+			System.err.printf("Something went wrong when reading file '%s'...%n", fileName);
+			e.printStackTrace();
+		}
+
+		return Collections.unmodifiableList(edges);
+	}
+
 	
 	//////////////////////////////
 	//draw stuff
@@ -185,7 +221,7 @@ public class Track extends JPanel implements KeyListener {
 	//////////////////////////////
 	//some getters
 
-	Line2D[] getTrackEdges() {
+	List<Line2D> getTrackEdges() {
 		return TRACK_EDGES;
 	}
 
