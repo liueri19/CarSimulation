@@ -84,8 +84,9 @@ public class Track extends JPanel implements KeyListener {
 				}
 			}
 		});
-
-		try {	//shutdown
+		
+		//shutdown
+		try {
 			clockFuture.get();
 			executor.shutdown();
 			executor.awaitTermination(1, TimeUnit.SECONDS);
@@ -227,39 +228,35 @@ public class Track extends JPanel implements KeyListener {
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		//turns out letters and arrow keys have different key pressed event behavior
-		int keyCode = e.getKeyCode();
-		if (keyCode == KeyEvent.VK_LEFT)
-			CAR.setTurningLeft(true);
-		else if (keyCode == KeyEvent.VK_RIGHT)
-			CAR.setTurningRight(true);
-		else if (keyCode == KeyEvent.VK_UP)
-			CAR.setAccelerating(true);
-		else if (keyCode == KeyEvent.VK_DOWN)
-			CAR.setDecelerating(true);
-		else if (keyCode == KeyEvent.VK_SHIFT)
-			CAR.setBraking(true);
-		System.out.println(KeyEvent.getKeyText(keyCode));
+		//letters and arrow keys have different key pressed event behavior
+		handleKeyEvent(e, true);
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		int keyCode = e.getKeyCode();
-		if (keyCode == KeyEvent.VK_LEFT)
-			CAR.setTurningLeft(false);
-		else if (keyCode == KeyEvent.VK_RIGHT)
-			CAR.setTurningRight(false);
-		else if (keyCode == KeyEvent.VK_UP)
-			CAR.setAccelerating(false);
-		else if (keyCode == KeyEvent.VK_DOWN)
-			CAR.setDecelerating(false);
-		else if (keyCode == KeyEvent.VK_SHIFT)
-			CAR.setBraking(false);
-		System.out.println("-" + KeyEvent.getKeyText(keyCode));
+		handleKeyEvent(e, false);
 
 		//DEBUG
-		if (keyCode == KeyEvent.VK_I)
+		if (e.getKeyCode() == KeyEvent.VK_I)
 			System.out.println("##INSPECT");
+	}
+	
+	private void handleKeyEvent(KeyEvent e, boolean isKeyPress) {
+		int keyCode = e.getKeyCode();
+		if (keyCode == KeyEvent.VK_LEFT)
+			CAR.setTurningLeft(isKeyPress);
+		else if (keyCode == KeyEvent.VK_RIGHT)
+			CAR.setTurningRight(isKeyPress);
+		else if (keyCode == KeyEvent.VK_UP)
+			CAR.setAccelerating(isKeyPress);
+		else if (keyCode == KeyEvent.VK_DOWN)
+			CAR.setDecelerating(isKeyPress);
+		else if (keyCode == KeyEvent.VK_SHIFT)
+			CAR.setBraking(isKeyPress);
+		
+		if (!isKeyPress)
+			System.out.print('-');
+		System.out.println(KeyEvent.getKeyText(keyCode));
 	}
 
 	@Override

@@ -19,22 +19,22 @@ public class Network {
 	public void setOuts(List<Node> outs) { this.outs = outs; }
 	
 	/**
-	 * Compute from the inputs.
+	 * Given a list of doubles as input values for the input nodes, computes through the
+	 * network and returns a list of doubles containing the results from the output nodes.
 	 */
 	public List<Double> compute(List<Double> inputs) {
-		int numNodes, inputSize;
-		numNodes = ins.size();
-		inputSize = inputs.size();
-		int bound = inputSize > numNodes ? numNodes : inputSize;	//lower of the 2
-		List<Double> outputs = new ArrayList<>();
-		
-		for (int i = 0; i < bound; i++) {
-			Node n = ins.get(i);
-			double d = inputs.get(i);
-			//write value 'd' to 'n'
-			//add to outputs
+		for (int i = 0; i < ins.size(); i++) {
+			Node node = ins.get(i);
+			double value =
+					i < inputs.size() ? inputs.get(i) : 0;
+
+			node.write(value);
 		}
 		
+		List<Double> outputs = new ArrayList<>();
+		for (Node out : outs)
+			outputs.add(out.read());
+
 		return outputs;
 	}
 }

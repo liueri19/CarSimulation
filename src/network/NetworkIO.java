@@ -9,7 +9,7 @@ import java.util.Date;
  * This class provides utility methods for reading and writing
  * structures of neural networks from and to files.
  */
-public class StructureIO {
+public class NetworkIO {
 
 	/**
 	 * Save the specified network structure to file.
