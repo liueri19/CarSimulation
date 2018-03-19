@@ -4,9 +4,7 @@ import network.Network;
 import network.NetworkIO;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 public class Main {
 
@@ -51,8 +49,19 @@ public class Main {
 			}
 		}
 
-		//terminate
 
+		//terminate
+		try {
+			simFuture.get();
+			if (netFuture != null) netFuture.get();
+
+			EXECUTOR.shutdown();
+			EXECUTOR.awaitTermination(1, TimeUnit.SECONDS);
+		}
+		catch (InterruptedException | ExecutionException e) {
+			System.err.println("Things went wrong...");
+			e.printStackTrace();
+		}
 
 		System.exit(0);
 	}

@@ -71,16 +71,6 @@ public class Track extends JPanel implements KeyListener {
 			}
 		}
 
-//		//shutdown
-//		try {
-//			clockFuture.get();	//wait for clock to finish
-//			clock.shutdown();
-//			clock.awaitTermination(1, TimeUnit.SECONDS);
-//		}
-//		catch (InterruptedException | ExecutionException e) {
-//			e.printStackTrace();
-//		}
-
 		frame.removeKeyListener(track);
 		frame.dispose();
 	}
