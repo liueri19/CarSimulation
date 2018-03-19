@@ -1,6 +1,9 @@
 package network;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -14,10 +17,15 @@ public class NetworkIO {
 	/**
 	 * Save the specified network structure to file.
 	 */
-	public static void saveConfig(Network network) {
+	public static void write(Network network) throws IOException {
 		Date now = new Date();
 		DateFormat format = new SimpleDateFormat("yyyyMMdd_HHmmss");
-		File save = new File("Network_" + format.format(now) + ".nw");
+		
+		BufferedWriter writer = new BufferedWriter(
+				new FileWriter("Network_" + format.format(now) + ".nw")
+		);
+		
+		
 	}
 
 	/**
@@ -26,7 +34,7 @@ public class NetworkIO {
 	 * @param path	the path of the saved network
 	 * @return	the reconstructed neural network
 	 */
-	public static Network readConfig(String path) {
+	public static Network read(String path) {
 		File save = new File(path);
 		Network network;
 		//read from save

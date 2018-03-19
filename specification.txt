@@ -22,3 +22,6 @@ network
     Fitness of a network should be based on the total time consumed to complete the track and the amount time the car drove out of the track, in both cases a lower amount of time result in a higher fitness.
     The network need to be able to load configuration from file and write configuration to file.
     Output hiddens match the controls of Car (accelerate, decelerate, brake, turning).
+
+The genome package is for doing generic algorithms, classes in that package represent the genotype of a network.
+Classes in the network package is used to represent an actual network built from the genotype. A network is a phenotype.
