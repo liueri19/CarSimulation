@@ -24,8 +24,12 @@ public class NetworkIO {
 		BufferedWriter writer = new BufferedWriter(
 				new FileWriter("Network_" + format.format(now) + ".nw")
 		);
-		
-		
+
+		for (Connection c : network.getConnections()) {
+			writer.write(
+					Long.toHexString(c.getPrevNode().getID())
+			);
+		}
 	}
 
 	/**

@@ -8,15 +8,19 @@ import java.util.List;
  */
 public class Network {
 	private List<Node> ins, outs, hiddens;
+	private List<Connection> connections;
 
-	public List<Node> getHiddens() { return new ArrayList<>(hiddens); }
-	protected void setHiddens(List<Node> hiddens) { this.hiddens = new ArrayList<>(hiddens); }
+	public List<Node> getHiddens() { return hiddens; }
+	void setHiddens(List<Node> hiddens) { this.hiddens = new ArrayList<>(hiddens); }
 	
 	public List<Node> getIns() { return ins; }
-	public void setIns(List<Node> ins) { this.ins = ins; }
+	void setIns(List<Node> ins) { this.ins = ins; }
 	
 	public List<Node> getOuts() { return outs; }
-	public void setOuts(List<Node> outs) { this.outs = outs; }
+	void setOuts(List<Node> outs) { this.outs = outs; }
+
+	public List<Connection> getConnections() { return connections; }
+	void setConnections(List<Connection> connections) { this.connections = connections; }
 	
 	/**
 	 * Given a list of doubles as input values for the input nodes, computes through the

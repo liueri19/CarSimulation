@@ -7,6 +7,10 @@ package network;
 public class Connection {
 	private Node prevNode, nextNode;
 	private double weight;
+
+	public Connection(double weight) {
+		this.weight = weight;
+	}
 	
 	public double getWeight() { return weight; }
 	void setWeight(double weight) { this.weight = weight; }
