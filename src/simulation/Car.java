@@ -24,21 +24,21 @@ public class Car extends Rectangle2D.Double {
 	/**
 	 * Default color for rendering cars.
 	 */
-	public static final Color DEFAULT_COLOR = new Color(50, 255, 50, 100);
+	static final Color DEFAULT_COLOR = new Color(50, 255, 50, 100);
 	/**
 	 * In U/ms^2. This is the acceleration constant used when {@link #accelerate()}
 	 * is called.
 	 */
-	public static final double ACCELERATION = 0.05;
+	private static final double ACCELERATION = 0.05;
 	/**
 	 * U/ms^2
 	 */
-	public static final double DECELERATION = 0.1;	//may be changed to be different from acceleration
-	public static final double TURN_AMOUNT = Math.PI / 180;
+	private static final double DECELERATION = 0.1;	//may be changed to be different from acceleration
+	private static final double TURN_AMOUNT = Math.PI / 180;
 	/**
 	 * Width and height of the car, used for painting and collision detection.
 	 */
-	public static final double WIDTH = 40, LENGTH = 70;
+	private static final double WIDTH = 40, LENGTH = 70;
 	/**
 	 * An angle in radians. This is the actual direction the car is facing.
 	 * The 0 should be the positive x axis.
@@ -48,7 +48,7 @@ public class Car extends Rectangle2D.Double {
 	 * U/ms
 	 */
 	private double speed = 0;
-	public static final double MAX_FORWARD_SPEED = MAX_VALUE, MAX_BACKWARD_SPEED = -MAX_VALUE;
+	private static final double MAX_FORWARD_SPEED = MAX_VALUE, MAX_BACKWARD_SPEED = -MAX_VALUE;
 	/**
 	 * x and y coordinates of the center of the car
 	 */
@@ -246,7 +246,7 @@ public class Car extends Rectangle2D.Double {
 	/**
 	 * Update the location of this car based on the current speed and heading.
 	 */
-	protected synchronized void update() {
+	synchronized void update() {
 		xC += getSpeed() * Math.cos(getHeading());
 		yC += getSpeed() * Math.sin(getHeading());
 		

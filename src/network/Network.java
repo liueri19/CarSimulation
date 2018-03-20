@@ -52,6 +52,48 @@ public class Network {
 		return outputs;
 	}
 
+	Node findNode(char type, long id) {
+		Collection<Node> searchSpace;
+		if (type == 'I')	//this could be better with an enum
+			searchSpace = ins;
+		else if (type == 'O')
+			searchSpace = outs;
+		else if (type == 'H')
+			searchSpace = hiddens;
+		else
+			throw new IllegalArgumentException("Invalid Node type: " + type);
+
+		for (Node node : searchSpace) {
+			if (node.getID() == id)
+				return node;
+		}
+
+		return null;
+	}
+
+	Node addIfAbsent(String stringID) {
+		if (stringID.length() < 2)
+			throw new IllegalArgumentException("Invalid string ID: " + stringID);
+
+		char type = stringID.charAt(0);
+		long id = Long.parseLong(stringID.substring(1), 16);
+
+		Node node = findNode(type, id);
+
+		if (node == null) {	//node not found
+			if (type == 'I')
+				node = new InputNode();
+			else if (type == 'O')
+				node = new OutputNode();
+			else if (type == 'H')
+				node = new Node();
+			else
+				throw new IllegalArgumentException("Invalid Node type: " + type);
+		}
+
+		return node;
+	}
+
 
 	//////////////////////////////
 	//basic getters

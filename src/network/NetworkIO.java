@@ -52,13 +52,16 @@ public class NetworkIO {
 	}
 
 	private static Connection parseEntry(String line) {
+		final Connection c = new Connection(0);
 		String[] components = line.split("->");
 
 		if (components.length != 3)
 			System.out.println("Incomplete connection: " + line);
 
 		for (String component : components) {
-
+			//TODO build connection
 		}
+
+		return c;
 	}
 }

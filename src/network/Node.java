@@ -1,34 +1,58 @@
 package network;
 
-import java.util.Set;
-import java.util.SortedSet;
+import java.util.*;
 
 /**
  * Represents a single neuron.
  */
-public abstract class Node implements Comparable<Node> {
+public class Node implements Comparable<Node> {
 	private static long global_id = 0;
-	protected final long ID;
-	protected SortedSet<Connection> prevConnections;
-	protected Set<Connection> nextConnections;
+	private final long ID;
+	private final List<Connection> prevConnections;
+	private final List<Connection> nextConnections;
 	private double value;
 
 	private final String strID;
-	
-	public Node(SortedSet<Connection> inputs,
-				Set<Connection> outputs) {
-		this(getNextAvailableID(), inputs, outputs);
-	}
 
-	public Node(long id, SortedSet<Connection> inputs, Set<Connection> outputs) {
+	public Node(long id, List<Connection> inputs, List<Connection> outputs) {
 		ID = id;
 		prevConnections = inputs;
 		nextConnections = outputs;
 
 		strID = buildStringID();
 	}
+
+
+	public static class NodeBuilder {
+		private Long id;
+		private List<Connection> prevConnections, nextConnections;
+
+		public NodeBuilder() {}
+
+		public NodeBuilder setId(long id) { this.id = id; return this; }
+
+		public NodeBuilder setPrevConnections(List<Connection> prevConnections) {
+			this.prevConnections = prevConnections;
+			return this;
+		}
+
+		public NodeBuilder setNextConnections(List<Connection> nextConnections) {
+			this.nextConnections = nextConnections;
+			return this;
+		}
+
+		public Node build() {
+			if (id == null) id = getNextAvailableID();
+			if (prevConnections == null) prevConnections = new ArrayList<>();
+			if (nextConnections == null) nextConnections = new ArrayList<>();
+
+			return new Node(id, prevConnections, nextConnections);
+		}
+	}
+
+
 	
-	public double write(double value) {
+	double write(double value) {
 		double oldValue = this.value;
 		
 		this.value = value;
@@ -38,7 +62,7 @@ public abstract class Node implements Comparable<Node> {
 		return oldValue;
 	}
 	
-	public double read() {
+	double read() {
 		return value;
 	}
 
@@ -66,5 +90,15 @@ public abstract class Node implements Comparable<Node> {
 	@Override
 	public int compareTo(Node node) {
 		return Long.compareUnsigned(getID(), node.getID());
+	}
+
+
+
+	public List<Connection> getPrevConnections() {
+		return prevConnections;
+	}
+
+	public List<Connection> getNextConnections() {
+		return nextConnections;
 	}
 }

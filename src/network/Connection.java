@@ -5,11 +5,18 @@ package network;
  * A connection has a weight.
  */
 public class Connection {
-	private Node prevNode, nextNode;
-	private double weight;
+	private final Network network;
+	private final Node prevNode, nextNode;
+	private final double weight;
 
-	public Connection(double weight) {
+	public Connection(Network network,
+					  double weight,
+					  Node prevNode,
+					  Node nextNode) {
+		this.network = network;
 		this.weight = weight;
+		this.prevNode = prevNode;
+		this.nextNode = nextNode;
 	}
 	
 	public void transmit(double value) {
@@ -25,13 +32,11 @@ public class Connection {
 
 	//////////////////////////////
 	//basic getters and setters
+	public Network getNetwork() { return network; }
 
 	public double getWeight() { return weight; }
-	void setWeight(double weight) { this.weight = weight; }
 
 	public Node getNextNode() { return nextNode; }
-	void setNextNode(Node nextNode) { this.nextNode = nextNode; }
 
 	public Node getPrevNode() { return prevNode; }
-	void setPrevNode(Node prevNode) { this.prevNode = prevNode; }
 }

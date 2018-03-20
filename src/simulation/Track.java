@@ -11,7 +11,7 @@ import java.awt.geom.Line2D;
  * This class is the ground where cars should be driving on.
  */
 public class Track extends JPanel implements KeyListener {
-	public static final int WIDTH = 800, HEIGHT = 600;
+	private static final int WIDTH = 800, HEIGHT = 600;
 
 	//initial x and y locations of the center of the car
 	private static final int INITIAL_X = WIDTH / 2, INITIAL_Y = -HEIGHT / 2;

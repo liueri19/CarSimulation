@@ -1,11 +1,16 @@
 package network;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.SortedSet;
+import java.util.List;
 
 public class OutputNode extends Node {
-	public OutputNode(SortedSet<Connection> inputs) {
-		super(inputs, Collections.emptySortedSet());
+	public OutputNode() {
+		this(new ArrayList<>());
+	}
+
+	public OutputNode(List<Connection> inputs) {
+		super(inputs, Collections.emptyList());
 	}
 
 	@Override
