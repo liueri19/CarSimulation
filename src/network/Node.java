@@ -1,25 +1,31 @@
 package network;
 
-import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
 
 /**
  * Represents a single neuron.
  */
-public abstract class Node {
+public abstract class Node implements Comparable<Node> {
 	private static long global_id = 0;
 	protected final long ID;
-	protected List<Connection> prevConnections, nextConnections;
+	protected SortedSet<Connection> prevConnections;
+	protected Set<Connection> nextConnections;
 	private double value;
+
+	private final String strID;
 	
-	public Node(List<Connection> inputs,
-				List<Connection> outputs) {
+	public Node(SortedSet<Connection> inputs,
+				Set<Connection> outputs) {
 		this(getNextAvailableID(), inputs, outputs);
 	}
 
-	public Node(long id, List<Connection> inputs, List<Connection> outputs) {
+	public Node(long id, SortedSet<Connection> inputs, Set<Connection> outputs) {
 		ID = id;
 		prevConnections = inputs;
 		nextConnections = outputs;
+
+		strID = buildStringID();
 	}
 	
 	public double write(double value) {
@@ -40,5 +46,25 @@ public abstract class Node {
 
 	public static synchronized long getNextAvailableID() {
 		return global_id++;
+	}
+
+
+	/**
+	 * This method is used to lazily initialize the string ID. Override this method
+	 * instead of the toString() method to change the string representation.
+	 */
+	protected String buildStringID() {
+		return 'H' + Long.toHexString(getID());
+	}
+
+	@Override
+	public String toString() {
+		return strID;
+	}
+
+
+	@Override
+	public int compareTo(Node node) {
+		return Long.compareUnsigned(getID(), node.getID());
 	}
 }

@@ -1,12 +1,13 @@
 package network;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 /**
  * This class provides utility methods for reading and writing
@@ -15,7 +16,7 @@ import java.util.Date;
 public class NetworkIO {
 
 	/**
-	 * Save the specified network structure to file.
+	 * Saves the specified network structure to file.
 	 */
 	public static void write(Network network) throws IOException {
 		Date now = new Date();
@@ -26,23 +27,38 @@ public class NetworkIO {
 		);
 
 		for (Connection c : network.getConnections()) {
-			writer.write(
-					Long.toHexString(c.getPrevNode().getID())
-			);
+			writer.write(c.toString());
+			writer.newLine();
 		}
 	}
 
 	/**
-	 * Read the file at the specified path and reconstruct the saved
+	 * Reads the file at the specified path and reconstructs the saved
 	 * neural network.
 	 * @param path	the path of the saved network
 	 * @return	the reconstructed neural network
 	 */
-	public static Network read(String path) {
-		File save = new File(path);
-		Network network;
-		//read from save
-		network = null;
+	public static Network read(String path) throws IOException {
+		Path save = Paths.get(path);
+		Network network = new Network();
+
+		Files.lines(save)
+				.map(NetworkIO::parseEntry)
+				.forEach(connection -> {
+					//TODO add to network
+				});
+
 		return network;
+	}
+
+	private static Connection parseEntry(String line) {
+		String[] components = line.split("->");
+
+		if (components.length != 3)
+			System.out.println("Incomplete connection: " + line);
+
+		for (String component : components) {
+
+		}
 	}
 }

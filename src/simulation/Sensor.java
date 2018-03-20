@@ -24,7 +24,7 @@ public class Sensor {
 	private static final double RANGE = 500;
 
 	//update this sensor
-	private final ExecutorService executor = Executors.newSingleThreadExecutor();
+	private static final ExecutorService POOL = Executors.newCachedThreadPool();
 	private volatile double distance;
 
 	/**
@@ -39,7 +39,7 @@ public class Sensor {
 		this.track = car.getTrack();
 		ray = new Line2D.Double();
 
-		executor.submit(() -> {
+		POOL.submit(() -> {
 			while (!track.isStopped()) {
 				if (track.isPaused())
 					continue;

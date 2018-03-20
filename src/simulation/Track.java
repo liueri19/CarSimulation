@@ -6,7 +6,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
-import java.util.concurrent.*;
 
 /**
  * This class is the ground where cars should be driving on.
@@ -25,17 +24,20 @@ public class Track extends JPanel implements KeyListener {
 	private static Track INSTANCE = null;
 	private final Car CAR = new Car(this, INITIAL_X, INITIAL_Y);
 
-	//these must not be modified outside main thread
+	//these may only be modified in response to key events
 	private volatile boolean stop = false;    //for stopping simulation and network
 	private volatile boolean pause = false;    //for pausing game clock
 	private volatile boolean verbose = false;    //for verbose output
+
+	//this may only be modified by main thread
+	private volatile boolean hasCrashed = false;
 
 
 	private Track() {
 	}
 
 	/**
-	 * Get the only instance of Track.
+	 * Gets the only instance of Track.
 	 */
 	static synchronized Track getInstance() {
 		if (INSTANCE == null)
@@ -58,17 +60,18 @@ public class Track extends JPanel implements KeyListener {
 //		ExecutorService clock = Executors.newSingleThreadExecutor();
 		//simulation clock
 		while (!track.stop) {
-			if (track.pause)
-				continue;
-			track.updateSimulation();
 			try {
 				Thread.sleep(10);
 			}
 			catch (InterruptedException e) {
-				System.err.println("Program interrupted");
+				System.err.println("Simulation interrupted");
 				e.printStackTrace();
 				break;
 			}
+
+			if (track.pause)
+				continue;
+			track.updateSimulation();
 		}
 
 		frame.removeKeyListener(track);
@@ -128,7 +131,7 @@ public class Track extends JPanel implements KeyListener {
 	}
 
 	/**
-	 * Draw a grid that is static to the world as a reference to the coordinate system.
+	 * Draws a grid that is static to the world as a reference to the coordinate system.
 	 */
 	private void drawGrid(Graphics2D g) {
 		Color originalColor = g.getColor();
@@ -174,26 +177,20 @@ public class Track extends JPanel implements KeyListener {
 	}
 
 	/**
-	 * Check if the program has terminated.
-	 *
-	 * @return true if the program has stopped, false otherwise
+	 * Checks if the program has terminated.
 	 */
-	public boolean isStopped() {
-		return stop;
-	}
+	public boolean isStopped() { return stop; }
 
 	/**
-	 * Check if the program has paused.
-	 *
-	 * @return true if the program has paused, false otherwise
+	 * Checks if the program has paused.
 	 */
-	public boolean isPaused() {
-		return pause;
-	}
+	public boolean isPaused() { return pause; }
 
+
+	public boolean hasCrashed() { return hasCrashed; }
 
 	/**
-	 * Check if CAR crashed, update CAR, update graphics.
+	 * Checks if car crashed, update car, update graphics.
 	 */
 	private void updateSimulation() {
 		//could be replaced with sensor checks
