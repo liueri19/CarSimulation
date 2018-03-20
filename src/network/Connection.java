@@ -5,15 +5,12 @@ package network;
  * A connection has a weight.
  */
 public class Connection {
-	private final Network network;
 	private final Node prevNode, nextNode;
 	private final double weight;
 
-	public Connection(Network network,
-					  double weight,
+	public Connection(double weight,
 					  Node prevNode,
 					  Node nextNode) {
-		this.network = network;
 		this.weight = weight;
 		this.prevNode = prevNode;
 		this.nextNode = nextNode;
@@ -30,9 +27,29 @@ public class Connection {
 				+ getNextNode().toString();
 	}
 
+	/**
+	 * The reverse of toString().
+	 */
+	public static Connection parseConnection(String s) {
+		String[] components = s.split("->");
+
+		if (components.length != 3) {
+			System.err.println("Incomplete connection: " + s);
+			return null;
+		}
+
+		String n0StrId = components[0];
+		double weight = Double.parseDouble(components[1]);
+		String n1StrId = components[2];
+
+		Node prevNode = Node.parseNode(n0StrId);
+		Node nextNode = Node.parseNode(n1StrId);
+
+		return new Connection(weight, prevNode, nextNode);
+	}
+
 	//////////////////////////////
 	//basic getters and setters
-	public Network getNetwork() { return network; }
 
 	public double getWeight() { return weight; }
 

@@ -8,6 +8,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * This class provides utility methods for reading and writing
@@ -40,28 +42,14 @@ public class NetworkIO {
 	 */
 	public static Network read(String path) throws IOException {
 		Path save = Paths.get(path);
+
 		Network network = new Network();
 
 		Files.lines(save)
-				.map(NetworkIO::parseEntry)
-				.forEach(connection -> {
-					//TODO add to network
-				});
+				.map(Connection::parseConnection)
+				.filter(Objects::nonNull)
+				.forEach(network::addConnection);
 
 		return network;
-	}
-
-	private static Connection parseEntry(String line) {
-		final Connection c = new Connection(0);
-		String[] components = line.split("->");
-
-		if (components.length != 3)
-			System.out.println("Incomplete connection: " + line);
-
-		for (String component : components) {
-			//TODO build connection
-		}
-
-		return c;
 	}
 }

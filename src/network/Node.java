@@ -66,6 +66,7 @@ public class Node implements Comparable<Node> {
 		return value;
 	}
 
+
 	public long getID() { return ID; }
 
 	public static synchronized long getNextAvailableID() {
@@ -92,7 +93,10 @@ public class Node implements Comparable<Node> {
 		return Long.compareUnsigned(getID(), node.getID());
 	}
 
-
+	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof Node && compareTo((Node) obj) == 0;
+	}
 
 	public List<Connection> getPrevConnections() {
 		return prevConnections;
@@ -100,5 +104,23 @@ public class Node implements Comparable<Node> {
 
 	public List<Connection> getNextConnections() {
 		return nextConnections;
+	}
+
+
+	public static Node parseNode(String strID) {
+		final char type = strID.charAt(0);
+		final long id = Long.parseLong(strID.substring(1), 16);
+		final Node node;
+
+		if (type == 'I')
+			node = new InputNode(id, new ArrayList<>());
+		else if (type == 'O')
+			node = new OutputNode(id, new ArrayList<>());
+		else if (type == 'H')
+			node = new Node.NodeBuilder().setId(id).build();
+		else
+			throw new IllegalArgumentException("Invalid Node type: " + type);
+
+		return node;
 	}
 }
