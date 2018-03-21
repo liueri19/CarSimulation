@@ -21,32 +21,30 @@ public class Track extends JPanel implements KeyListener {
 	private static final Line2D[] TRACK_EDGES = {
 			//TODO convert picture to data?
 	};
-	private static Track INSTANCE = null;
+//	private static Track INSTANCE = null;
 	private final Car CAR = new Car(this, INITIAL_X, INITIAL_Y);
 
 	//these may only be modified in response to key events
 	private volatile boolean stop = false;    //for stopping simulation and network
-	private volatile boolean pause = false;    //for pausing game clock
 	private volatile boolean verbose = false;    //for verbose output
+	private volatile boolean pause = false;    //for pausing game clock
+	//monitor for clock to wait on during pause
+	final Object PAUSE_MONITOR = new Object();
 
-	//this may only be modified by main thread
-	private volatile boolean hasCrashed = false;
-
-
-	private Track() {
-	}
-
-	/**
-	 * Gets the only instance of Track.
-	 */
-	static synchronized Track getInstance() {
-		if (INSTANCE == null)
-			INSTANCE = new Track();
-		return INSTANCE;
-	}
+//	private Track() {
+//	}
+//
+//	/**
+//	 * Gets the only instance of Track.
+//	 */
+//	static synchronized Track getInstance() {
+//		if (INSTANCE == null)
+//			INSTANCE = new Track();
+//		return INSTANCE;
+//	}
 
 	public static void main(String[] args) {
-		Track track = getInstance();
+		Track track = new Track();
 		JFrame frame = new JFrame("Simulation");
 		track.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		track.setBackground(Color.LIGHT_GRAY);
@@ -57,21 +55,27 @@ public class Track extends JPanel implements KeyListener {
 		frame.setVisible(true);
 
 
-//		ExecutorService clock = Executors.newSingleThreadExecutor();
 		//simulation clock
 		while (!track.stop) {
 			try {
 				Thread.sleep(10);
+
+//				if (track.pause)
+//					continue;
+				if (track.isPaused()) {
+					synchronized (track.PAUSE_MONITOR) {
+						if (track.isPaused())
+							track.PAUSE_MONITOR.wait();
+					}
+				}
+
+				track.updateSimulation();
 			}
 			catch (InterruptedException e) {
 				System.err.println("Simulation interrupted");
 				e.printStackTrace();
 				break;
 			}
-
-			if (track.pause)
-				continue;
-			track.updateSimulation();
 		}
 
 		frame.removeKeyListener(track);
@@ -186,9 +190,6 @@ public class Track extends JPanel implements KeyListener {
 	 */
 	public boolean isPaused() { return pause; }
 
-
-	public boolean hasCrashed() { return hasCrashed; }
-
 	/**
 	 * Checks if car crashed, update car, update graphics.
 	 */
@@ -247,9 +248,16 @@ public class Track extends JPanel implements KeyListener {
 		if (keyChar == 'r')    //reset CAR location
 			CAR.setTo(INITIAL_X, INITIAL_Y);
 
-			//these flags should be modified only by the main thread
-		else if (keyChar == 'p')
+			//these flags should be modified only by key events
+		else if (keyChar == 'p') {    //pause
 			pause = !pause;
+
+			if (!isPaused()) {	//un-pause
+				synchronized (PAUSE_MONITOR) {
+					PAUSE_MONITOR.notifyAll();
+				}
+			}
+		}
 		else if (keyChar == 'q')    //quit
 			stop = true;
 		else if (keyChar == 'v')    //verbose

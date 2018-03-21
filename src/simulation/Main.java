@@ -9,9 +9,9 @@ import java.util.concurrent.*;
 
 public class Main {
 
-	static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(2);
+	static final ExecutorService EXECUTOR = Executors.newCachedThreadPool();
 
-	private static final Car CAR = Track.getInstance().getCar();
+	private static final Car CAR = new Track().getCar();
 	
 	public static void main(String[] args) {
 		/*

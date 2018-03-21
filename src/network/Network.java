@@ -124,7 +124,7 @@ public class Network {
 			Node node = endNodes[i];
 
 			//try add the node to network;
-			// if succeed, keep existing reference, otherwise find the node reference in the network.
+			// if succeed, keep existing reference, otherwise find the reference in the network.
 			node = addNode(node) ? node : findNode(node);
 
 			List<Connection> nodeConnections;

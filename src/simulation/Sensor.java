@@ -41,8 +41,16 @@ public class Sensor {
 
 		POOL.submit(() -> {
 			while (!track.isStopped()) {
-				if (track.isPaused())
-					continue;
+//				if (track.isPaused())
+//					continue;
+				if (track.isPaused()) {
+					synchronized (track.PAUSE_MONITOR) {
+						if (track.isPaused())
+							try { track.PAUSE_MONITOR.wait(); }
+							catch (InterruptedException e) { e.printStackTrace(); }
+					}
+				}
+
 				updateRay();
 				distance = calculateDistance();
 			}
