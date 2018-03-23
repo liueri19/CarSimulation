@@ -45,12 +45,8 @@ public class Sensor {
 					//sensor sleeps less
 					Thread.sleep(Main.UPDATE_INTERVAL /2);
 
-					if (track.isPaused()) {
-						synchronized (track.PAUSE_MONITOR) {
-							if (track.isPaused())
-								track.PAUSE_MONITOR.wait();
-						}
-					}
+					if (track.isPaused())
+						track.waitForUnpause();
 
 					updateRay();
 					distance = calculateDistance();

@@ -43,7 +43,7 @@ public class Car extends Rectangle2D.Double {
 	 * An angle in radians. This is the actual direction the car is facing.
 	 * The 0 should be the positive x axis.
 	 */
-	private double heading = 0;
+	private volatile double heading = 0;
 	/**
 	 * U/ms
 	 */
@@ -52,7 +52,7 @@ public class Car extends Rectangle2D.Double {
 	/**
 	 * x and y coordinates of the center of the car
 	 */
-	private double xC, yC;
+	private volatile double xC, yC;
 
 	/**
 	 * For example, if accelerating is true, the car should accelerate every update
@@ -104,7 +104,7 @@ public class Car extends Rectangle2D.Double {
 	 * 0 should be the positive x axis.
 	 * @return the current heading
 	 */
-	public synchronized double getHeading() {
+	public double getHeading() {
 		return heading;
 	}
 
@@ -113,7 +113,7 @@ public class Car extends Rectangle2D.Double {
 	 * the origin.
 	 * @return returns the x coordinate in relation to the origin
 	 */
-	public synchronized double getXCoordinate() {
+	public double getXCoordinate() {
 		return xC;
 	}
 
@@ -122,7 +122,7 @@ public class Car extends Rectangle2D.Double {
 	 * the origin.
 	 * @return returns the y coordinate in relation to the origin
 	 */
-	public synchronized double getYCoordinate() {
+	public double getYCoordinate() {
 		return yC;
 	}
 
@@ -136,7 +136,7 @@ public class Car extends Rectangle2D.Double {
 		yC = y;
 	}
 
-	protected synchronized void setHeading(double heading) {
+	protected void setHeading(double heading) {
 		this.heading = heading;
 	}
 

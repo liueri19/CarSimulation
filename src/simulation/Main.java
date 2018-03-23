@@ -53,6 +53,9 @@ public class Main {
 
 							try {
 								Thread.sleep(UPDATE_INTERVAL);
+
+								if (TRACK.isPaused())
+									TRACK.waitForUnpause();
 							}
 							catch (InterruptedException e) {
 								e.printStackTrace();
@@ -64,23 +67,6 @@ public class Main {
 				}
 			}
 		}
-
-
-
-//		//debug - observer thread to watch Track
-//		Thread t = new Thread(() -> {
-//			long mark = System.nanoTime();
-//
-//			do {
-//				if (System.nanoTime() - mark > 500000000) {
-//					System.out.println("Observer: " + TRACK.isStopped());
-//					System.out.println("Observer: " + TRACK.isPaused());
-//					mark = System.nanoTime();
-//				}
-//			} while (!TRACK.isStopped());
-//		});
-//		t.start();
-
 
 		terminateSilently(EXECUTOR, simFuture, netFuture);
 

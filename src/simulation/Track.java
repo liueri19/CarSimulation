@@ -32,7 +32,14 @@ public class Track extends JPanel implements KeyListener {
 	private volatile boolean pause = false;    //for pausing game clock
 
 	//monitor for clock to wait on during pause
-	final Object PAUSE_MONITOR = new Object();
+	private final Object PAUSE_MONITOR = new Object();
+
+	void waitForUnpause() throws InterruptedException {
+		synchronized (PAUSE_MONITOR) {
+			if (isPaused())
+				PAUSE_MONITOR.wait();
+		}
+	}
 
 
 	private Track(JFrame frame) {
@@ -66,12 +73,8 @@ public class Track extends JPanel implements KeyListener {
 			try {
 				Thread.sleep(Main.UPDATE_INTERVAL);
 
-				if (isPaused()) {
-					synchronized (PAUSE_MONITOR) {
-						if (isPaused())
-							PAUSE_MONITOR.wait();
-					}
-				}
+				if (isPaused())
+					waitForUnpause();
 
 				updateSimulation();
 			}
