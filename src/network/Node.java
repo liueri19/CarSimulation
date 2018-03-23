@@ -14,6 +14,7 @@ public class Node implements Comparable<Node> {
 	private final List<Connection> prevConnections;
 	private final List<Connection> nextConnections;
 
+	private final List<Double> oldValues = new ArrayList<>();
 	private double value;
 
 	/**
@@ -69,14 +70,22 @@ public class Node implements Comparable<Node> {
 
 
 	
-	double write(double value) {
-		double oldValue = this.value;
-		
-		this.value = value;
+	void write(double value) {
+		oldValues.add(value);
+
+		//update value if all previous connections have transmitted
+		if (oldValues.size() >= prevConnections.size()) {
+			double sum = 0;
+			for (double d : oldValues)
+				sum += d;
+
+			this.value = sum / oldValues.size();
+
+			oldValues.clear();
+		}
+
 		for (Connection c : nextConnections)
 			c.transmit(value);
-		
-		return oldValue;
 	}
 	
 	double read() {

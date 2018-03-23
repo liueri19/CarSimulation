@@ -3,6 +3,7 @@ package simulation;
 import network.Network;
 import network.NetworkIO;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -11,7 +12,8 @@ public class Main {
 
 	static final ExecutorService EXECUTOR = Executors.newCachedThreadPool();
 
-	private static final Car CAR = new Track().getCar();
+	private static final Track TRACK = new Track();
+	private static final Car CAR = TRACK.getCar();
 	
 	public static void main(String[] args) {
 		/*
@@ -32,25 +34,50 @@ public class Main {
 				}
 				else {
 					netFuture = EXECUTOR.submit(() -> {
-						List<Double> results = network.compute(CAR.getReadings());
 
-						int n = 0;
-						CAR.setTurningLeft(results.get(n++) > 0.5);
-						CAR.setTurningRight(results.get(n++) > 0.5);
-						CAR.setAccelerating(results.get(n++) > 0.5);
-						CAR.setDecelerating(results.get(n++) > 0.5);
-						CAR.setBraking(results.get(n) > 0.5);
+						while (!TRACK.isStopped()) {
 
-						try {
-							Thread.sleep(UPDATE_INTERVAL);
+							List<Double> results =
+									network.compute(
+											scaleToRange(CAR.getReadings(), 0, 500, 0, 1)
+									);
+
+							int n = 0;
+							CAR.setTurningLeft(results.get(n++) > 0.5);
+							CAR.setTurningRight(results.get(n++) > 0.5);
+							CAR.setAccelerating(results.get(n++) > 0.5);
+							CAR.setDecelerating(results.get(n++) > 0.5);
+							CAR.setBraking(results.get(n) > 0.5);
+
+							try {
+								Thread.sleep(UPDATE_INTERVAL);
+							}
+							catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+
 						}
-						catch (InterruptedException e) {
-							e.printStackTrace();
-						}
+
 					});
 				}
 			}
 		}
+
+
+
+//		//debug - observer thread to watch Track
+//		Thread t = new Thread(() -> {
+//			long mark = System.nanoTime();
+//
+//			do {
+//				if (System.nanoTime() - mark > 500000000) {
+//					System.out.println("Observer: " + TRACK.isStopped());
+//					System.out.println("Observer: " + TRACK.isPaused());
+//					mark = System.nanoTime();
+//				}
+//			} while (!TRACK.isStopped());
+//		});
+//		t.start();
 
 
 		terminateSilently(EXECUTOR, simFuture, netFuture);
@@ -71,5 +98,19 @@ public class Main {
 			System.err.println("Things went wrong while terminating...");
 			e.printStackTrace();
 		}
+	}
+
+
+	private static List<Double> scaleToRange(List<Double> inputs,
+											 double originalLower, double originalUpper,
+											 double lower, double upper) {
+		final List<Double> outputs = new ArrayList<>();
+
+		final double factor = (upper - lower) / (originalUpper - originalLower);
+
+		for (double input : inputs)
+			outputs.add(factor * input);
+
+		return outputs;
 	}
 }

@@ -21,31 +21,35 @@ public class Track extends JPanel implements KeyListener {
 	private static final Line2D[] TRACK_EDGES = {
 			//TODO convert picture to data?
 	};
-//	private static Track INSTANCE = null;
+
 	private final Car CAR = new Car(this, INITIAL_X, INITIAL_Y);
+
+	private final JFrame holdingFrame;
 
 	//these may only be modified in response to key events
 	private volatile boolean stop = false;    //for stopping simulation and network
 	private volatile boolean verbose = false;    //for verbose output
 	private volatile boolean pause = false;    //for pausing game clock
+
 	//monitor for clock to wait on during pause
 	final Object PAUSE_MONITOR = new Object();
 
-//	private Track() {
-//	}
-//
-//	/**
-//	 * Gets the only instance of Track.
-//	 */
-//	static synchronized Track getInstance() {
-//		if (INSTANCE == null)
-//			INSTANCE = new Track();
-//		return INSTANCE;
-//	}
+
+	private Track(JFrame frame) {
+		holdingFrame = frame;
+	}
 
 	public static void main(String[] args) {
-		Track track = new Track();
-		JFrame frame = new JFrame("Simulation");
+		Track track = Track.newInstance();
+
+		track.run();
+
+		track.cleanUp();
+	}
+
+	static Track newInstance() {
+		JFrame frame = new JFrame("( ͡° ͜ʖ ͡°)");
+		Track track = new Track(frame);
 		track.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		track.setBackground(Color.LIGHT_GRAY);
 		frame.add(track);
@@ -54,20 +58,22 @@ public class Track extends JPanel implements KeyListener {
 		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		frame.setVisible(true);
 
+		return track;
+	}
 
-		//simulation clock
-		while (!track.stop) {
+	void run() {
+		while (!stop) {
 			try {
 				Thread.sleep(Main.UPDATE_INTERVAL);
 
-				if (track.isPaused()) {
-					synchronized (track.PAUSE_MONITOR) {
-						if (track.isPaused())
-							track.PAUSE_MONITOR.wait();
+				if (isPaused()) {
+					synchronized (PAUSE_MONITOR) {
+						if (isPaused())
+							PAUSE_MONITOR.wait();
 					}
 				}
 
-				track.updateSimulation();
+				updateSimulation();
 			}
 			catch (InterruptedException e) {
 				System.err.println("Simulation interrupted");
@@ -75,9 +81,11 @@ public class Track extends JPanel implements KeyListener {
 				break;
 			}
 		}
+	}
 
-		frame.removeKeyListener(track);
-		frame.dispose();
+	void cleanUp() {
+		holdingFrame.removeKeyListener(this);
+		holdingFrame.dispose();
 	}
 
 	//////////////////////////////
@@ -174,9 +182,7 @@ public class Track extends JPanel implements KeyListener {
 		return TRACK_EDGES;
 	}
 
-	Car getCar() {
-		return CAR;
-	}
+	Car getCar() { return CAR; }
 
 	/**
 	 * Checks if the program has terminated.
