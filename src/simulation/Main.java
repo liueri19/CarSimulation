@@ -12,7 +12,7 @@ public class Main {
 
 	static final ExecutorService EXECUTOR = Executors.newCachedThreadPool();
 
-	private static final Track TRACK = new Track();
+	private static final Track TRACK = Track.newInstance();
 	private static final Car CAR = TRACK.getCar();
 	
 	public static void main(String[] args) {
@@ -22,7 +22,9 @@ public class Main {
 		network
 		 */
 
-		Future<?> simFuture = EXECUTOR.submit(() -> Track.main(args));
+		Future<?> simFuture = EXECUTOR.submit(() -> {
+			TRACK.run(); TRACK.cleanUp();
+		});
 		Future<?> netFuture = null;
 
 		if (args != null && args.length >= 2) {
