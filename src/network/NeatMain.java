@@ -11,6 +11,16 @@ import java.util.stream.Stream;
 
 public class NeatMain {
 	/**
+	 * Networks performing below this percentage of the population will be eliminated.
+	 */
+	private static final double HARSHNESS = 0.50;
+	/**
+	 * Number of networks allowed in a generation.
+	 */
+	private static final int POPULATION_SIZE = 150;
+
+
+	/**
 	 * Arguments:
 	 * -Initial population: a directory with network files to start searching from
 	 */
@@ -50,8 +60,8 @@ public class NeatMain {
 			initialPopulation.add(initCarNetwork());
 		}
 
-		System.out.println("Done");
-		//TODO implement the actual stuff??
+
+
 	}
 
 

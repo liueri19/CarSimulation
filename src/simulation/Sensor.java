@@ -41,18 +41,25 @@ public class Sensor {
 
 		POOL.submit(() -> {
 			while (!track.isStopped()) {
-//				if (track.isPaused())
-//					continue;
-				if (track.isPaused()) {
-					synchronized (track.PAUSE_MONITOR) {
-						if (track.isPaused())
-							try { track.PAUSE_MONITOR.wait(); }
-							catch (InterruptedException e) { e.printStackTrace(); }
-					}
-				}
+				try {
+					//sensor sleeps less
+					Thread.sleep(Main.UPDATE_INTERVAL /2);
 
-				updateRay();
-				distance = calculateDistance();
+					if (track.isPaused()) {
+						synchronized (track.PAUSE_MONITOR) {
+							if (track.isPaused())
+								track.PAUSE_MONITOR.wait();
+						}
+					}
+
+					updateRay();
+					distance = calculateDistance();
+				}
+				catch (InterruptedException e) {
+					System.err.println("Sensor interrupted");
+					e.printStackTrace();
+					break;
+				}
 			}
 		});
 	}

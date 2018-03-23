@@ -58,10 +58,8 @@ public class Track extends JPanel implements KeyListener {
 		//simulation clock
 		while (!track.stop) {
 			try {
-				Thread.sleep(10);
+				Thread.sleep(Main.UPDATE_INTERVAL);
 
-//				if (track.pause)
-//					continue;
 				if (track.isPaused()) {
 					synchronized (track.PAUSE_MONITOR) {
 						if (track.isPaused())

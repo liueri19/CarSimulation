@@ -203,6 +203,11 @@ public class Network {
 	}
 
 
+//	public Network crossover(Network other) {
+//
+//	}
+
+
 	//////////////////////////////
 	//basic getters - nothing interesting past this point
 

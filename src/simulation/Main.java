@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.*;
 
 public class Main {
+	public static final long UPDATE_INTERVAL = 10;	//ms
 
 	static final ExecutorService EXECUTOR = Executors.newCachedThreadPool();
 
@@ -41,7 +42,7 @@ public class Main {
 						CAR.setBraking(results.get(n) > 0.5);
 
 						try {
-							Thread.sleep(10);
+							Thread.sleep(UPDATE_INTERVAL);
 						}
 						catch (InterruptedException e) {
 							e.printStackTrace();
