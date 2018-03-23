@@ -7,7 +7,6 @@ import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Objects;
 
 /**
  * This class provides utility methods for reading and writing
@@ -30,6 +29,18 @@ public class NetworkIO {
 			writer.write(c.toString());
 			writer.newLine();
 		}
+
+		writer.close();
+	}
+
+	public static void writeSilently(Network network) {
+		try {
+			write(network);
+		}
+		catch (IOException e) {
+			System.err.println("Failed to write network");
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -45,8 +56,27 @@ public class NetworkIO {
 
 		Files.lines(save)
 				.map(Connection::parseConnection)
-				.filter(Objects::nonNull)
-				.forEach(network::addConnection);
+//				.filter(Objects::nonNull)
+				.forEach(network::putConnection);
+
+		return network;
+	}
+
+	/**
+	 * Silently reads the file at the specified path and reconstructs the saved
+	 * neural network.
+	 * Instead of throwing IOException, this methods returns null for failed operations.
+	 */
+	public static Network readSilently(String file) {
+		Network network = null;
+
+		try {
+			network = read(file);
+		}
+		catch (IOException e) {
+			System.err.println("Failed to read file: " + file);
+			e.printStackTrace();
+		}
 
 		return network;
 	}

@@ -7,27 +7,43 @@ import java.util.*;
  */
 public class Node implements Comparable<Node> {
 	private static long global_id = 0;
+
 	private final long ID;
+	private final String strID;
+	private final NodeType type;
 	private final List<Connection> prevConnections;
 	private final List<Connection> nextConnections;
+
 	private double value;
 
-	private final String strID;
+	/**
+	 * Returns a new Node instance with only a type and id.
+	 * Node objects constructed from this method is not functional, they may only be used
+	 * as a data holder. Attempting to perform operations on such objects results in
+	 * undefined behavior.
+	 */
+	public static Node getDataHolder(NodeType type, long id) {
+		return new Node(type, id, null, null);
+	}
 
-	public Node(long id, List<Connection> inputs, List<Connection> outputs) {
+	private Node(NodeType type, long id, List<Connection> inputs, List<Connection> outputs) {
+		this.type = type;
 		ID = id;
 		prevConnections = inputs;
 		nextConnections = outputs;
 
-		strID = buildStringID();
+		strID = initStringID();
 	}
 
 
 	public static class NodeBuilder {
 		private Long id;
+		private NodeType type;
 		private List<Connection> prevConnections, nextConnections;
 
-		public NodeBuilder() {}
+		public NodeBuilder(NodeType nodeType) { type = nodeType; }
+
+		public NodeBuilder setNodeType(NodeType type) { this.type = type; return this; }
 
 		public NodeBuilder setId(long id) { this.id = id; return this; }
 
@@ -42,11 +58,12 @@ public class Node implements Comparable<Node> {
 		}
 
 		public Node build() {
+			if (type == null) type = NodeType.HIDDEN;
 			if (id == null) id = getNextAvailableID();
 			if (prevConnections == null) prevConnections = new ArrayList<>();
 			if (nextConnections == null) nextConnections = new ArrayList<>();
 
-			return new Node(id, prevConnections, nextConnections);
+			return new Node(type, id, prevConnections, nextConnections);
 		}
 	}
 
@@ -67,10 +84,16 @@ public class Node implements Comparable<Node> {
 	}
 
 
-	public long getID() { return ID; }
+	public static Node parseNode(String strID) {
+		final char typeChar = strID.charAt(0);
+		final long id = Long.parseLong(strID.substring(1), 16);
 
-	public static synchronized long getNextAvailableID() {
-		return global_id++;
+		final Node node;
+		final NodeType type = NodeType.of(String.valueOf(typeChar));
+		final NodeBuilder builder =
+				new Node.NodeBuilder(type).setId(id);
+
+		return builder.build();
 	}
 
 
@@ -78,8 +101,8 @@ public class Node implements Comparable<Node> {
 	 * This method is used to lazily initialize the string ID. Override this method
 	 * instead of the toString() method to change the string representation.
 	 */
-	protected String buildStringID() {
-		return 'H' + Long.toHexString(getID());
+	protected String initStringID() {
+		return type.toString() + Long.toHexString(getID());
 	}
 
 	@Override
@@ -98,29 +121,30 @@ public class Node implements Comparable<Node> {
 		return obj instanceof Node && compareTo((Node) obj) == 0;
 	}
 
+
+	public long getID() { return ID; }
+
+	public static synchronized long getNextAvailableID() {
+		return global_id++;
+	}
+
+
+	public boolean addInput(Connection connection) {
+		return prevConnections.add(connection);
+	}
+
+	public boolean addOutput(Connection connection) {
+		return nextConnections.add(connection);
+	}
+
+	//here goes the boring getters
+	public NodeType getNodeType() { return type; }
+
 	public List<Connection> getPrevConnections() {
 		return prevConnections;
 	}
 
 	public List<Connection> getNextConnections() {
 		return nextConnections;
-	}
-
-
-	public static Node parseNode(String strID) {
-		final char type = strID.charAt(0);
-		final long id = Long.parseLong(strID.substring(1), 16);
-		final Node node;
-
-		if (type == 'I')
-			node = new InputNode(id, new ArrayList<>());
-		else if (type == 'O')
-			node = new OutputNode(id, new ArrayList<>());
-		else if (type == 'H')
-			node = new Node.NodeBuilder().setId(id).build();
-		else
-			throw new IllegalArgumentException("Invalid Node type: " + type);
-
-		return node;
 	}
 }

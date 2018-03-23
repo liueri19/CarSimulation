@@ -3,7 +3,6 @@ package simulation;
 import network.Network;
 import network.NetworkIO;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -24,10 +23,10 @@ public class Main {
 		Future<?> netFuture = null;
 
 		if (args != null && args.length >= 2) {
-			Network network = silentlyRead(args[1]);
+			Network network = NetworkIO.readSilently(args[1]);
 
 			if (network != null) {
-				if (network.getOuts().size() != 5) {	//make this not a constant?
+				if (network.getOutputNodes().size() != 5) {	//make this not a constant?
 					System.err.println("Broken network: need exactly 5 output nodes");
 				}
 				else {
@@ -53,28 +52,13 @@ public class Main {
 		}
 
 
-		silentlyTerminate(EXECUTOR, simFuture, netFuture);
+		terminateSilently(EXECUTOR, simFuture, netFuture);
 
 		System.exit(0);
 	}
 
 
-	private static Network silentlyRead(String file) {
-		Network network = null;
-
-		try {
-			network = NetworkIO.read(file);
-		}
-		catch (IOException e) {
-			System.err.println("Failed to read file: " + file);
-			e.printStackTrace();
-		}
-
-		return network;
-	}
-
-
-	private static void silentlyTerminate(ExecutorService executor, Future<?>... futures) {
+	private static void terminateSilently(ExecutorService executor, Future<?>... futures) {
 		try {
 			for (Future<?> f : futures)
 				if (f != null) f.get();
