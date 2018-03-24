@@ -91,6 +91,29 @@ public class Track extends JPanel implements KeyListener {
 		holdingFrame.dispose();
 	}
 
+
+	//////////////////////////////
+	//utility method
+
+	private static List<Line2D> readMapConfig(String fileName) {	//TODO implement read map config
+		final List<Line2D> edges = new ArrayList<>();
+
+		try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+
+		}
+		catch (FileNotFoundException e) {
+			System.err.printf("File '%s' not found%n", fileName);
+		}
+		catch (IOException e) {
+			System.err.printf("Something went wrong when reading file '%s'...%n", fileName);
+			e.printStackTrace();
+		}
+
+		return Collections.unmodifiableList(edges);
+	}
+
+
+
 	//////////////////////////////
 	//draw stuff
 
@@ -181,7 +204,7 @@ public class Track extends JPanel implements KeyListener {
 	//////////////////////////////
 	//some getters
 
-	Line2D[] getTrackEdges() {
+	List<Line2D> getTrackEdges() {
 		return TRACK_EDGES;
 	}
 
