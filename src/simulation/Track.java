@@ -6,6 +6,13 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * This class is the ground where cars should be driving on.
@@ -18,9 +25,7 @@ public class Track extends JPanel implements KeyListener {
 	/**
 	 * Defines the edges of the track.
 	 */
-	private static final Line2D[] TRACK_EDGES = {
-			//TODO convert picture to data?
-	};
+	private final List<Line2D> TRACK_EDGES;
 
 	private final Car CAR = new Car(this, INITIAL_X, INITIAL_Y);
 
@@ -42,21 +47,25 @@ public class Track extends JPanel implements KeyListener {
 	}
 
 
-	private Track(JFrame frame) {
+	private Track(JFrame frame, List<Line2D> edges) {
 		holdingFrame = frame;
+		TRACK_EDGES = edges;
 	}
 
 	public static void main(String[] args) {
-		Track track = Track.newInstance();
+		final List<Line2D> edges =
+				args.length >= 1 ? readMap(args[0]) : new ArrayList<>();
+
+		Track track = Track.newInstance(edges);
 
 		track.run();
 
 		track.cleanUp();
 	}
 
-	static Track newInstance() {
+	static Track newInstance(List<Line2D> edges) {
 		JFrame frame = new JFrame("( ͡° ͜ʖ ͡°)");
-		Track track = new Track(frame);
+		Track track = new Track(frame, edges);
 		track.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		track.setBackground(Color.LIGHT_GRAY);
 		frame.add(track);
@@ -66,6 +75,10 @@ public class Track extends JPanel implements KeyListener {
 		frame.setVisible(true);
 
 		return track;
+	}
+
+	static Track newInstance(String mapFile) {
+		return newInstance(readMap(mapFile));
 	}
 
 	void run() {
@@ -95,11 +108,11 @@ public class Track extends JPanel implements KeyListener {
 	//////////////////////////////
 	//utility method
 
-	private static List<Line2D> readMapConfig(String fileName) {	//TODO implement read map config
+	private static List<Line2D> readMap(String fileName) {
 		final List<Line2D> edges = new ArrayList<>();
 
 		try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
-
+			//TODO implement read map config
 		}
 		catch (FileNotFoundException e) {
 			System.err.printf("File '%s' not found%n", fileName);

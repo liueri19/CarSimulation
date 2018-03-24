@@ -12,8 +12,6 @@ public class Main {
 
 	static final ExecutorService EXECUTOR = Executors.newCachedThreadPool();
 
-	private static final Track TRACK = Track.newInstance();
-	private static final Car CAR = TRACK.getCar();
 	
 	public static void main(String[] args) {
 		/*
@@ -21,13 +19,17 @@ public class Main {
 		map
 		network
 		 */
+		final Track TRACK =
+				args.length >= 1 ? Track.newInstance(args[0]) : Track.newInstance(new ArrayList<>());
+		final Car CAR = TRACK.getCar();
+
 
 		Future<?> simFuture = EXECUTOR.submit(() -> {
 			TRACK.run(); TRACK.cleanUp();
 		});
 		Future<?> netFuture = null;
 
-		if (args != null && args.length >= 2) {
+		if (args.length >= 2) {
 			Network network = NetworkIO.readSilently(args[1]);
 
 			if (network != null) {
