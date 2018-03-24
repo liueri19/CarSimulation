@@ -81,7 +81,7 @@ public class NeatMain {
 		//connect inputs to outputs
 		for (Node input : inputs) {
 			for (Node output : outputs)
-				network.addConnection(input, output, 0);
+				network.addConnection(input, output, 0, 0);
 		}
 
 		return network;

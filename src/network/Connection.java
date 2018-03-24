@@ -6,18 +6,19 @@ package network;
  */
 public class Connection {
 	private final Node prevNode, nextNode;
-	private final double weight;
+	private final double weight, bias;
 	private final long innovNum;
 	private boolean enabled = true;
 
 	private static long globalInnovationNumber = 0;
 
 	public Connection(long innovationNumber,
-					  double weight,
+					  double weight, double bias,
 					  Node prevNode,
 					  Node nextNode) {
 		innovNum = innovationNumber;
 		this.weight = weight;
+		this.bias = bias;
 		this.prevNode = prevNode;
 		this.nextNode = nextNode;
 	}
@@ -31,7 +32,7 @@ public class Connection {
 	public String toString() {
 		return getInnovationNumber() + ":\t" +
 				getPrevNode().toString() + "->" +
-				getWeight()  + "->" +
+				getWeight()  + "+" + getBias() + "->" +
 				getNextNode().toString();
 	}
 
@@ -40,35 +41,39 @@ public class Connection {
 	 * a new Connection instance with corresponding data.
 	 */
 	public static Connection parseConnection(String s) {
-		/* innovNum:	N_id0->weight->N_id1 */
+		/* innovNum:	N_id0->weight+bias->N_id1 */
 		String[] components = s.split("->");
-		/* innovNum:	N_id0, weight, N_id1 */
+		/* innovNum:	N_id0, weight+bias, N_id1 */
 
 		if (components.length != 3)
 			throw new IllegalArgumentException("Incomplete connection entry: " + s);
 
 		String[] innovNumAndStrID = components[0].split(":\t");
-		/* [innovNum, N_id0], weight, N_id1 */
+		/* [innovNum, N_id0], weight+bias, N_id1 */
+		String[] weightAndBias = components[1].split("\\+");
+		/* [innovNum, N_id0], [weight, bias], N_id1 */
 
-		if (innovNumAndStrID.length != 2)
+		if (innovNumAndStrID.length != 2 || weightAndBias.length != 2)
 			throw new IllegalArgumentException("Incomplete connection entry: " + s);
 
 		long innovNum = Long.parseLong(innovNumAndStrID[0]);
 		String n0StrId = innovNumAndStrID[1];
 
-		double weight = Double.parseDouble(components[1]);
+		double weight = Double.parseDouble(weightAndBias[0]);
+		double bias = Double.parseDouble(weightAndBias[1]);
+
 		String n1StrId = components[2];
 
 		Node prevNode = Node.parseNode(n0StrId);
 		Node nextNode = Node.parseNode(n1StrId);
 
-		return new Connection(innovNum, weight, prevNode, nextNode);
+		return new Connection(innovNum, weight, bias, prevNode, nextNode);
 	}
 
 
 	/**
 	 * Two Connections are logically equal if they both connect the same Nodes, even if
-	 * they have different weights or innovation numbers.
+	 * they have different weights, bias, or innovation numbers.
 	 */
 	@Override
 	public boolean equals(Object c) {
@@ -89,6 +94,8 @@ public class Connection {
 	public long getInnovationNumber() { return innovNum; }
 
 	public double getWeight() { return weight; }
+
+	public double getBias() { return bias; }
 
 	public Node getNextNode() { return nextNode; }
 

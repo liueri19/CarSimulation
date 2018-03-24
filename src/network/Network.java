@@ -126,7 +126,7 @@ public class Network {
 			connection =
 					new Connection(
 							connection.getInnovationNumber(),
-							connection.getWeight(),
+							connection.getWeight(), connection.getBias(),
 							endNodes[0], endNodes[1]
 					);
 		}
@@ -153,7 +153,7 @@ public class Network {
 	 * Connects an existing Node to another existing Node, making a new Connection.
 	 * This is the "add connection" mutation.
 	 */
-	public void addConnection(Node from, Node to, double weight) {
+	public void addConnection(Node from, Node to, double weight, double bias) {
 		from = findNode(from);
 		to = findNode(to);
 
@@ -161,7 +161,7 @@ public class Network {
 			throw new IllegalArgumentException("Node is not in the network");
 
 		Connection c =
-				new Connection(Connection.getNextGlobalInnovNum(), weight, from, to);
+				new Connection(Connection.getNextGlobalInnovNum(), weight, bias, from, to);
 
 		putConnection(c);
 	}
@@ -179,17 +179,19 @@ public class Network {
 
 		final Node newNode = new Node.NodeBuilder(NodeType.HIDDEN).build();
 
+		// keeps identical weight and bias
 		final Connection connection1 =
 				new Connection(
 						Connection.getNextGlobalInnovNum(),
-						connection.getWeight(),
+						connection.getWeight(), connection.getBias(),
 						connection.getPrevNode(),
 						newNode
 				);
+		// weight of 1 and bias of 0
 		final Connection connection2 =
 				new Connection(
 						Connection.getNextGlobalInnovNum(),
-						1,
+						1, 0,
 						newNode,
 						connection.getNextNode()
 				);

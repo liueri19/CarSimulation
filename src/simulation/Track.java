@@ -36,7 +36,7 @@ public class Track extends JPanel implements KeyListener {
 
 	void waitForUnpause() throws InterruptedException {
 		synchronized (PAUSE_MONITOR) {
-			if (isPaused())
+			while (isPaused())
 				PAUSE_MONITOR.wait();
 		}
 	}
