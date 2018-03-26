@@ -25,7 +25,7 @@ public class NeatMain {
 	 * -Initial population: a directory with network files to start searching from
 	 */
 	public static void main(String[] args) {
-		final List<Network> initialPopulation = new ArrayList<>();
+		final List<Network> population = new ArrayList<>();
 
 		if (args.length >= 1) {
 			Path path = Paths.get(args[0]);
@@ -35,33 +35,32 @@ public class NeatMain {
 					files
 							.map(NetworkIO::readSilently)
 							.filter(Objects::nonNull)
-							.forEach(initialPopulation::add);
+							.forEach(population::add);
 				}
 				catch (IOException e) {
 					System.err.println("Failed to read directory: " + args[0]);
 				}
 			}
 			else {
-				initialPopulation.add(
+				population.add(
 						NetworkIO.readSilently(path.toString())
 				);
 			}
 		}
 
 
-		if (initialPopulation.size() == 0) {
+		if (population.size() == 0) {
 			/*
 			reasons this may happen:
 				no argument was provided to main;
 				no file is present in the specified directory;
 				the read failed;
-			use default, a network with input nodes connected directly to outputs
 			 */
-			initialPopulation.add(initCarNetwork());
+			population.add(initCarNetwork());
 		}
 
 
-
+//		population.forEach(NetworkIO::writeSilently);
 	}
 
 

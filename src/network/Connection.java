@@ -6,7 +6,7 @@ package network;
  */
 public class Connection {
 	private final Node prevNode, nextNode;
-	private final double weight, bias;
+	private double weight, bias;
 	private final long innovNum;
 	private boolean enabled = true;
 
@@ -94,8 +94,9 @@ public class Connection {
 	public long getInnovationNumber() { return innovNum; }
 
 	public double getWeight() { return weight; }
-
+	public void setWeight(double weight) { this.weight = weight; }
 	public double getBias() { return bias; }
+	public void setBias(double bias) { this.bias = bias; }
 
 	public Node getNextNode() { return nextNode; }
 

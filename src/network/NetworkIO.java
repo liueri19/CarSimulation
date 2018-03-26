@@ -1,12 +1,16 @@
 package network;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * This class provides utility methods for reading and writing
@@ -25,6 +29,28 @@ public class NetworkIO {
 				new FileWriter("Network_" + format.format(now) + ".nw")
 		);
 
+		//write input nodes
+		for (Node i : network.getInputNodes()) {
+			writer.write(i.toString());
+			writer.write(", ");
+		}
+		writer.newLine();
+
+		//write hidden nodes
+		for (Node h : network.getHiddens().values()) {
+			writer.write(h.toString());
+			writer.write(", ");
+		}
+		writer.newLine();
+
+		//write output nodes
+		for (Node o : network.getOutputNodes()) {
+			writer.write(o.toString());
+			writer.write(", ");
+		}
+		writer.newLine();
+
+		//write connections
 		for (Connection c : network.getConnections()) {
 			writer.write(c.toString());
 			writer.newLine();
@@ -54,13 +80,35 @@ public class NetworkIO {
 
 		Network network = new Network();
 
-		Files.lines(save)
-				.map(Connection::parseConnection)
-//				.filter(Objects::nonNull)
-				.forEach(network::putConnection);
+		final String[] lines = Files.lines(save).toArray(String[]::new);
+
+		// for first 3 lines
+		for (int i = 0; i < 3; i++) {
+			final String line = lines[i];
+			if (line.isEmpty()) continue;
+			parseNodeLine(line).forEach(network::putNode);
+		}
+
+		// rest of the file
+		for (int i = 3; i < lines.length; i++) {
+			network.putConnection(
+					Connection.parseConnection(lines[i])
+			);
+		}
 
 		return network;
 	}
+
+	private static List<Node> parseNodeLine(String line) {
+		String[] nodeStrs = line.split(", ");
+		List<Node> nodes = new ArrayList<>();
+
+		for (String n : nodeStrs)
+			nodes.add(Node.parseNode(n));
+
+		return nodes;
+	}
+
 
 	/**
 	 * Silently reads the file at the specified path and reconstructs the saved

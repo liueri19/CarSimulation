@@ -1,6 +1,7 @@
 package network;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a single neuron.
@@ -94,10 +95,13 @@ public class Node implements Comparable<Node> {
 
 
 	public static Node parseNode(String strID) {
+		if (strID == null) throw new NullPointerException();
+		if (strID.length() < 2) throw new IllegalArgumentException();
+
+
 		final char typeChar = strID.charAt(0);
 		final long id = Long.parseLong(strID.substring(1), 16);
 
-		final Node node;
 		final NodeType type = NodeType.of(String.valueOf(typeChar));
 		final NodeBuilder builder =
 				new Node.NodeBuilder(type).setId(id);

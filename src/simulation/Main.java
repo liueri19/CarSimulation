@@ -20,7 +20,9 @@ public class Main {
 		network
 		 */
 		final Track TRACK =
-				args.length >= 1 ? Track.newInstance(args[0]) : Track.newInstance(new ArrayList<>());
+				args.length >= 1 ?
+						Track.newInstance(args[0], true) :
+						Track.newInstance(new ArrayList<>(), true);
 		final Car CAR = TRACK.getCar();
 
 

@@ -14,25 +14,9 @@ public class Network {
 	private final List<Node> outputNodes = new ArrayList<>();
 	private final SortedMap<Long, Node> hiddens = new TreeMap<>();
 
-//	private SortedSet<Connection> connections = new TreeSet<>(connectionComparator);
-	private final Set<Connection> connections = new HashSet<>();
-
-//	/**
-//	 * It doesn't really make sense to compare Connections this way, so Connection
-//	 * does not implement Comparable.
-//	 */
-//	private static final Comparator<Connection> connectionComparator =
-//			(c1, c2) -> {
-//				//first compare weights, then compare prev nodes, then next nodes
-//				if (c1.getWeight() != c2.getWeight())
-//					return Double.compare(c1.getWeight(), c2.getWeight());
-//
-//				int comparePrev = c1.getPrevNode().compareTo(c2.getPrevNode());
-//				if (comparePrev != 0)
-//					return comparePrev;
-//
-//				return c1.getNextNode().compareTo(c2.getNextNode());
-//			};
+	private final SortedSet<Connection> connections = new TreeSet<>(
+			Comparator.comparingLong(Connection::getInnovationNumber)
+	);
 
 	
 	/**
@@ -205,15 +189,18 @@ public class Network {
 	}
 
 
-//	public Network crossover(Network other) {
-//
+	/**
+	 * Performs a crossover with the specified Network and returns the offspring.
+	 */
+//	public Network reproduceWith(Network other) {
+//		Network better =
 //	}
 
 
 	//////////////////////////////
 	//basic getters - nothing interesting past this point
 
-	public SortedMap<Long, Node> getHiddens() { return hiddens; }
+	public Map<Long, Node> getHiddens() { return hiddens; }
 
 	public List<Node> getInputNodes() { return inputNodes; }
 

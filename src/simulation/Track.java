@@ -10,9 +10,9 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * This class is the ground where cars should be driving on.
@@ -56,29 +56,32 @@ public class Track extends JPanel implements KeyListener {
 		final List<Line2D> edges =
 				args.length >= 1 ? readMap(args[0]) : new ArrayList<>();
 
-		Track track = Track.newInstance(edges);
+		Track track = Track.newInstance(edges, true);
 
 		track.run();
 
 		track.cleanUp();
 	}
 
-	static Track newInstance(List<Line2D> edges) {
+	static Track newInstance(List<Line2D> edges, boolean doGraphics) {
 		JFrame frame = new JFrame("( ͡° ͜ʖ ͡°)");
 		Track track = new Track(frame, edges);
-		track.setPreferredSize(new Dimension(WIDTH, HEIGHT));
-		track.setBackground(Color.LIGHT_GRAY);
-		frame.add(track);
-		frame.addKeyListener(track);
-		frame.pack();
-		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		frame.setVisible(true);
+
+		if (doGraphics) {
+			track.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+			track.setBackground(Color.LIGHT_GRAY);
+			frame.add(track);
+			frame.addKeyListener(track);
+			frame.pack();
+			frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+			frame.setVisible(true);
+		}
 
 		return track;
 	}
 
-	static Track newInstance(String mapFile) {
-		return newInstance(readMap(mapFile));
+	static Track newInstance(String mapFile, boolean doGraphics) {
+		return newInstance(readMap(mapFile), doGraphics);
 	}
 
 	void run() {
