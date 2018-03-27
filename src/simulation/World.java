@@ -6,26 +6,23 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
  * This class is the ground where cars should be driving on.
  */
-public class Track extends JPanel implements KeyListener {
+public class World extends JPanel implements KeyListener {
 	private static final int WIDTH = 800, HEIGHT = 600;
 
 	//initial x and y locations of the center of the car
 	private static final int INITIAL_X = WIDTH / 2, INITIAL_Y = -HEIGHT / 2;
-	/**
-	 * Defines the edges of the track.
-	 */
-	private final List<Line2D> TRACK_EDGES;
+
+//	/**
+//	 * Defines the edges of the track.
+//	 */
+//	private final List<Line2D> TRACK_EDGES;
+	private final Map MAP;
 
 	private final Car CAR = new Car(this, INITIAL_X, INITIAL_Y);
 
@@ -47,41 +44,41 @@ public class Track extends JPanel implements KeyListener {
 	}
 
 
-	private Track(JFrame frame, List<Line2D> edges) {
+	private World(JFrame frame, Map map) {
 		holdingFrame = frame;
-		TRACK_EDGES = edges;
+		MAP = map;
 	}
 
 	public static void main(String[] args) {
-		final List<Line2D> edges =
-				args.length >= 1 ? readMap(args[0]) : new ArrayList<>();
+		final Map map =
+				args.length >= 1 ? Map.readMap(args[0]) : new Map(Collections.emptyList());
 
-		Track track = Track.newInstance(edges, true);
+		World world = World.newInstance(map, true);
 
-		track.run();
+		world.run();
 
-		track.cleanUp();
+		world.cleanUp();
 	}
 
-	static Track newInstance(List<Line2D> edges, boolean doGraphics) {
+	static World newInstance(Map map, boolean doGraphics) {
 		JFrame frame = new JFrame("( ͡° ͜ʖ ͡°)");
-		Track track = new Track(frame, edges);
+		World world = new World(frame, map);
 
 		if (doGraphics) {
-			track.setPreferredSize(new Dimension(WIDTH, HEIGHT));
-			track.setBackground(Color.LIGHT_GRAY);
-			frame.add(track);
-			frame.addKeyListener(track);
+			world.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+			world.setBackground(Color.LIGHT_GRAY);
+			frame.add(world);
+			frame.addKeyListener(world);
 			frame.pack();
 			frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			frame.setVisible(true);
 		}
 
-		return track;
+		return world;
 	}
 
-	static Track newInstance(String mapFile, boolean doGraphics) {
-		return newInstance(readMap(mapFile), doGraphics);
+	static World newInstance(String mapFile, boolean doGraphics) {
+		return newInstance(Map.readMap(mapFile), doGraphics);
 	}
 
 	void run() {
@@ -105,27 +102,6 @@ public class Track extends JPanel implements KeyListener {
 	void cleanUp() {
 		holdingFrame.removeKeyListener(this);
 		holdingFrame.dispose();
-	}
-
-
-	//////////////////////////////
-	//utility method
-
-	private static List<Line2D> readMap(String fileName) {
-		final List<Line2D> edges = new ArrayList<>();
-
-		try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
-			//TODO implement read map config
-		}
-		catch (FileNotFoundException e) {
-			System.err.printf("File '%s' not found%n", fileName);
-		}
-		catch (IOException e) {
-			System.err.printf("Something went wrong when reading file '%s'...%n", fileName);
-			e.printStackTrace();
-		}
-
-		return Collections.unmodifiableList(edges);
 	}
 
 
@@ -163,9 +139,7 @@ public class Track extends JPanel implements KeyListener {
 	}
 
 	private void drawEdges(Graphics2D g) {
-		g.setColor(Color.BLACK);
-		for (Line2D edge : TRACK_EDGES)
-			g.draw(edge);
+		//TODO shift edges in respect to car
 	}
 
 	private void drawCar(Graphics2D g) {
@@ -219,10 +193,9 @@ public class Track extends JPanel implements KeyListener {
 
 	//////////////////////////////
 	//some getters
+	Map getMap() { return MAP; }
 
-	List<Line2D> getTrackEdges() {
-		return TRACK_EDGES;
-	}
+	List<Line2D> getTrackEdges() { return getMap().getEdges(); }
 
 	Car getCar() { return CAR; }
 
@@ -241,7 +214,7 @@ public class Track extends JPanel implements KeyListener {
 	 */
 	private void updateSimulation() {
 		//could be replaced with sensor checks
-		for (Line2D line : TRACK_EDGES) {
+		for (Line2D line : getTrackEdges()) {
 			if (CAR.intersectsLine(line)) {
 				//car crashed
 				break;

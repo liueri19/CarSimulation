@@ -77,11 +77,11 @@ public class NeatMain {
 		for (int i = 0; i < 5; i++)
 			outputs.add(new Node.NodeBuilder(NodeType.OUTPUT).build());
 
-		//connect inputs to outputs
-		for (Node input : inputs) {
-			for (Node output : outputs)
-				network.addConnection(input, output, 0, 0);
-		}
+//		//connect inputs to outputs
+//		for (Node input : inputs) {
+//			for (Node output : outputs)
+//				network.addConnection(input, output, 0, 0);
+//		}
 
 		return network;
 	}

@@ -1,14 +1,14 @@
 This project is aimed to construct a virtual world where a car is being controlled by a trained neural network. At this point, the project is expected to contain of three parts:
-    the simulation environment, mainly the world/track and the car,
+    the simulation environment, mainly the world/world and the car,
     a graphical output of the environment,
     and the development and training of the neural network.
-The end result is expect to be a neural network controlling a car driving down a complex track with multiple irregular turns without crashing or external help.
+The end result is expect to be a neural network controlling a car driving down a complex world with multiple irregular turns without crashing or external help.
 
 simulation
-    This package contains everything used to compose the simulation environment. Classes in this package should be able to build a ground, the track, and the car(s). They should also be responsible for the execution and display of the environment. These classes should also provide interface for interaction with the network package.
+    This package contains everything used to compose the simulation environment. Classes in this package should be able to build a ground, the world, and the car(s). They should also be responsible for the execution and display of the environment. These classes should also provide interface for interaction with the network package.
 
-    Track should know the turning points of both sides of the track. It should display a zoomed in partial view of the world centered around the car.
-    The track should be represented as a collection of Line2D objects.
+    Track should know the turning points of both sides of the world. It should display a zoomed in partial view of the world centered around the car.
+    The world should be represented as a collection of Line2D objects.
     The world should be borderless, all coordinates will be based on an origin (instead of in relation to the edges). The world should be updated once every 10 milliseconds. All distances should be measured in Units(U).
     The car should contain the 8 sensors. The car should initially be placed on the origin.
     Unless handling graphics, all coordinates should have up as positive y, right as positive x.
@@ -19,7 +19,7 @@ simulation
 network
     The neural network should run on a different tread than the main or the graphics thread.    //maybe not necessary
     Classes should build a simple neural network, taking inputs from the classes of the simulation class and return outputs back to the classes in the simulation class.
-    Fitness of a network should be based on the total time consumed to complete the track and the amount time the car drove out of the track, in both cases a lower amount of time result in a higher fitness.
+    Fitness of a network should be based on the total time consumed to complete the world and the amount time the car drove out of the world, in both cases a lower amount of time result in a higher fitness.
     The network need to be able to load configuration from file and write configuration to file.
     Output hiddens match the controls of Car (accelerate, decelerate, brake, turning).
 

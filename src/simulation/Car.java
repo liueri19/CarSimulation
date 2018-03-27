@@ -61,20 +61,20 @@ public class Car extends Rectangle2D.Double {
 
 	private final Sensor sensorL, sensorR, sensorF, sensorB, sensorFL, sensorFR, sensorLF, sensorRF;
 	private final List<Sensor> sensors = new ArrayList<>();
-	private final Track track;
+	private final World world;
 
 	/**
 	 * Construct a car at the specified locations with default width and height.
 	 * @param x	the x coordinate of the center
 	 * @param y	the y coordinate of the center
 	 */
-	public Car(Track track, int x, int y) {
+	public Car(World world, int x, int y) {
 		//using WIDTH then LENGTH would draw a car with heading 0 facing up,
 		//as they are taken as the width and height of the rectangle
 		super(x - LENGTH/2, -y - WIDTH/2, LENGTH, WIDTH);
 		xC = 0;
 		yC = 0;
-		this.track = track;
+		this.world = world;
 
 		//add sensors
 		sensors.add(sensorL = new Sensor(this, Math.PI/2));	//+90
@@ -87,8 +87,8 @@ public class Car extends Rectangle2D.Double {
 		sensors.add(sensorRF = new Sensor(this, -Math.PI/3));	//-60
 	}
 
-	public Track getTrack() {
-		return track;
+	public World getWorld() {
+		return world;
 	}
 
 	/**

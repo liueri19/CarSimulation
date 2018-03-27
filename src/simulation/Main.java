@@ -19,15 +19,15 @@ public class Main {
 		map
 		network
 		 */
-		final Track TRACK =
+		final World World =
 				args.length >= 1 ?
-						Track.newInstance(args[0], true) :
-						Track.newInstance(new ArrayList<>(), true);
-		final Car CAR = TRACK.getCar();
+						World.newInstance(args[0], true) :
+						World.newInstance(new ArrayList<>(), true);
+		final Car CAR = World.getCar();
 
 
 		Future<?> simFuture = EXECUTOR.submit(() -> {
-			TRACK.run(); TRACK.cleanUp();
+			World.run(); World.cleanUp();
 		});
 		Future<?> netFuture = null;
 
@@ -41,7 +41,7 @@ public class Main {
 				else {
 					netFuture = EXECUTOR.submit(() -> {
 
-						while (!TRACK.isStopped()) {
+						while (!World.isStopped()) {
 
 							List<Double> results =
 									network.compute(
@@ -58,8 +58,8 @@ public class Main {
 							try {
 								Thread.sleep(UPDATE_INTERVAL);
 
-								if (TRACK.isPaused())
-									TRACK.waitForUnpause();
+								if (World.isPaused())
+									World.waitForUnpause();
 							}
 							catch (InterruptedException e) {
 								e.printStackTrace();

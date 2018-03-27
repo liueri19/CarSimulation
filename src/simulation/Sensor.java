@@ -18,7 +18,7 @@ public class Sensor {
 	 */
 	private final double direction;
 	private final Car car;
-	private final Track track;
+	private final World world;
 	private Line2D ray;	//a line to check for intersections
 	//the range of the sensor
 	private static final double RANGE = 500;
@@ -36,17 +36,17 @@ public class Sensor {
 	public Sensor(Car car, double direction) {
 		this.direction = direction;
 		this.car = car;
-		this.track = car.getTrack();
+		this.world = car.getWorld();
 		ray = new Line2D.Double();
 
 		POOL.submit(() -> {
-			while (!track.isStopped()) {
+			while (!world.isStopped()) {
 				try {
 					//sensor sleeps less
 					Thread.sleep(Main.UPDATE_INTERVAL /2);
 
-					if (track.isPaused())
-						track.waitForUnpause();
+					if (world.isPaused())
+						world.waitForUnpause();
 
 					updateRay();
 					distance = calculateDistance();
@@ -89,7 +89,7 @@ public class Sensor {
 		Point here = new Point(car.getXCoordinate(), car.getYCoordinate());
 		Point intersect;
 		double distance = RANGE;
-		for (Line2D bound : car.getTrack().getTrackEdges()) {
+		for (Line2D bound : car.getWorld().getTrackEdges()) {
 			intersect = getIntersection(bound);
 			if (intersect == null)
 				continue;

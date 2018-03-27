@@ -1,4 +1,4 @@
-This file is for keeping track of stuff done in the current commit
+This file is for keeping world of stuff done in the current commit
 
 change simulation clock implementation
 add pause
