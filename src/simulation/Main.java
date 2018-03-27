@@ -4,6 +4,7 @@ import network.Network;
 import network.NetworkIO;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -19,15 +20,15 @@ public class Main {
 		map
 		network
 		 */
-		final World World =
+		final World WORLD =
 				args.length >= 1 ?
 						World.newInstance(args[0], true) :
-						World.newInstance(new ArrayList<>(), true);
-		final Car CAR = World.getCar();
+						World.newInstance(Collections.emptyList(), true);
+		final Car CAR = WORLD.getCar();
 
 
 		Future<?> simFuture = EXECUTOR.submit(() -> {
-			World.run(); World.cleanUp();
+			WORLD.run(); WORLD.cleanUp();
 		});
 		Future<?> netFuture = null;
 
@@ -41,7 +42,7 @@ public class Main {
 				else {
 					netFuture = EXECUTOR.submit(() -> {
 
-						while (!World.isStopped()) {
+						while (!WORLD.isStopped()) {
 
 							List<Double> results =
 									network.compute(
@@ -58,8 +59,8 @@ public class Main {
 							try {
 								Thread.sleep(UPDATE_INTERVAL);
 
-								if (World.isPaused())
-									World.waitForUnpause();
+								if (WORLD.isPaused())
+									WORLD.waitForUnpause();
 							}
 							catch (InterruptedException e) {
 								e.printStackTrace();

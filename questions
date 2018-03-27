@@ -1,0 +1,11 @@
+When is a good time to validate input?
+(see Map.parseEdge and Map.parsePoint)
+
+Where should methods be put in a class?
+Private helper methods that is only used in another method. Should they be put at the
+bottom of the class or right below the related method?
+If at the bottom of the class, there could be quite a distance between the usage and the
+declaration. If right next to the usage, the public API of the class is visually cluttered
+with helper methods.
+
+Checked vs unchecked exceptions (specifically IOException and UncheckedIOException)

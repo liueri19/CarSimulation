@@ -18,11 +18,10 @@ public class World extends JPanel implements KeyListener {
 	//initial x and y locations of the center of the car
 	private static final int INITIAL_X = WIDTH / 2, INITIAL_Y = -HEIGHT / 2;
 
-//	/**
-//	 * Defines the edges of the track.
-//	 */
-//	private final List<Line2D> TRACK_EDGES;
-	private final Map MAP;
+	/**
+	 * Defines the edges of the track.
+	 */
+	private final List<Line2D> TRACK_EDGES;
 
 	private final Car CAR = new Car(this, INITIAL_X, INITIAL_Y);
 
@@ -44,25 +43,25 @@ public class World extends JPanel implements KeyListener {
 	}
 
 
-	private World(JFrame frame, Map map) {
+	private World(JFrame frame, List<Line2D> trackEdges) {
 		holdingFrame = frame;
-		MAP = map;
+		TRACK_EDGES = Collections.unmodifiableList(trackEdges);
 	}
 
 	public static void main(String[] args) {
-		final Map map =
-				args.length >= 1 ? Map.readMap(args[0]) : new Map(Collections.emptyList());
+		final List<Line2D> edges =
+				args.length >= 1 ? MapIO.readMapSilently(args[0]) : Collections.emptyList();
 
-		World world = World.newInstance(map, true);
+		World world = World.newInstance(edges, true);
 
 		world.run();
 
 		world.cleanUp();
 	}
 
-	static World newInstance(Map map, boolean doGraphics) {
+	static World newInstance(List<Line2D> trackEdges, boolean doGraphics) {
 		JFrame frame = new JFrame("( ͡° ͜ʖ ͡°)");
-		World world = new World(frame, map);
+		World world = new World(frame, trackEdges);
 
 		if (doGraphics) {
 			world.setPreferredSize(new Dimension(WIDTH, HEIGHT));
@@ -78,7 +77,7 @@ public class World extends JPanel implements KeyListener {
 	}
 
 	static World newInstance(String mapFile, boolean doGraphics) {
-		return newInstance(Map.readMap(mapFile), doGraphics);
+		return newInstance(MapIO.readMapSilently(mapFile), doGraphics);
 	}
 
 	void run() {
@@ -193,9 +192,8 @@ public class World extends JPanel implements KeyListener {
 
 	//////////////////////////////
 	//some getters
-	Map getMap() { return MAP; }
 
-	List<Line2D> getTrackEdges() { return getMap().getEdges(); }
+	List<Line2D> getTrackEdges() { return TRACK_EDGES; }
 
 	Car getCar() { return CAR; }
 
