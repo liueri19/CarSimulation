@@ -6,6 +6,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,6 +23,7 @@ public class World extends JPanel implements KeyListener {
 	 * Defines the edges of the track.
 	 */
 	private final List<Line2D> TRACK_EDGES;
+	private final List<Line2D> shiftedEdges;	//temporary edges with shifted coordinates
 
 	private final Car CAR = new Car(this, INITIAL_X, INITIAL_Y);
 
@@ -46,6 +48,13 @@ public class World extends JPanel implements KeyListener {
 	private World(JFrame frame, List<Line2D> trackEdges) {
 		holdingFrame = frame;
 		TRACK_EDGES = Collections.unmodifiableList(trackEdges);
+
+		//init shiftedEdges
+		final List<Line2D> edges = new ArrayList<>();
+		TRACK_EDGES.stream()
+				.map(edge -> new Line2D.Double(edge.getP1(), edge.getP2()))
+				.forEach(edges::add);
+		shiftedEdges = Collections.unmodifiableList(edges);
 	}
 
 	public static void main(String[] args) {
@@ -138,7 +147,19 @@ public class World extends JPanel implements KeyListener {
 	}
 
 	private void drawEdges(Graphics2D g) {
-		//TODO shift edges in respect to car
+		final double shiftX, shiftY;
+		shiftX = -CAR.getXCoordinate();
+		shiftY = -CAR.getYCoordinate();
+
+		for (int i = 0; i < TRACK_EDGES.size(); i++) {
+			final Line2D original = TRACK_EDGES.get(i);
+			final Line2D shifted = shiftedEdges.get(i);
+
+			shifted.setLine(original);
+			shiftEdge(shifted, shiftX, shiftY);
+		}
+		
+		shiftedEdges.forEach(g::draw);
 	}
 
 	private void drawCar(Graphics2D g) {
@@ -188,6 +209,17 @@ public class World extends JPanel implements KeyListener {
 		}
 
 		g.setColor(originalColor);    //reset color
+	}
+
+	/**
+	 * Shifts the specified Line2D by the specified x and y values.
+	 */
+	private static void shiftEdge(Line2D line, double x, double y) {
+		line.setLine(
+				line.getX1()+x,
+				line.getY1()+y,
+				line.getX2()+x,
+				line.getY2()+y);
 	}
 
 	//////////////////////////////
