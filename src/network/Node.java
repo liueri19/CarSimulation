@@ -94,6 +94,9 @@ public class Node implements Comparable<Node> {
 
 
 	public static Node parseNode(String strID) {
+		if (strID.length() < 2)
+			throw new IllegalArgumentException("Incomplete Node: " + strID);
+
 		final char typeChar = strID.charAt(0);
 		final long id = Long.parseLong(strID.substring(1), 16);
 
