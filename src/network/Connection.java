@@ -83,11 +83,7 @@ public class Connection {
 	}
 
 
-	static long getNextGlobalInnovNum() {
-		synchronized (Connection.class) {
-			return globalInnovationNumber++;
-		}
-	}
+	static synchronized long getNextGlobalInnovNum() { return globalInnovationNumber++; }
 
 	//////////////////////////////
 	//basic getters and setters
