@@ -1,7 +1,7 @@
 package simulation;
 
 import network.Network;
-import network.NetworkIO;
+import utils.NetworkIO;
 
 import java.util.ArrayList;
 import java.util.Collections;

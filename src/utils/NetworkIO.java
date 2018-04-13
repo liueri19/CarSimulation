@@ -1,4 +1,8 @@
-package network;
+package utils;
+
+import network.Connection;
+import network.Network;
+import network.Node;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;

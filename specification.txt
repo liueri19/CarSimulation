@@ -23,5 +23,4 @@ network
     The network need to be able to load configuration from file and write configuration to file.
     Output hiddens match the controls of Car (accelerate, decelerate, brake, turning).
 
-The genome package is for doing generic algorithms, classes in that package represent the genotype of a network.
-Classes in the network package is used to represent an actual network built from the genotype. A network is a phenotype.
+Settings for a particular run are stored in configuration files.

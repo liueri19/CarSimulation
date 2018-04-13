@@ -1,5 +1,7 @@
 package simulation;
 
+import utils.MapIO;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -158,7 +160,7 @@ public class World extends JPanel implements KeyListener {
 			shifted.setLine(original);
 			shiftEdge(shifted, shiftX, shiftY);
 		}
-		
+
 		shiftedEdges.forEach(g::draw);
 	}
 

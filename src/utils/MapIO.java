@@ -1,4 +1,4 @@
-package simulation;
+package utils;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
@@ -23,7 +23,7 @@ public class MapIO {
 		DateFormat format = new SimpleDateFormat("yyyyMMdd_HHmmss");
 
 		BufferedWriter writer = new BufferedWriter(
-				new FileWriter("Map_" + format.format(now) + ".trackEdges")
+				new FileWriter("Map_" + format.format(now) + ".map")
 		);
 
 		for (Line2D line : trackEdges) {

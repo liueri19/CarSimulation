@@ -1,4 +1,9 @@
-package network;
+package ga;
+
+import network.Network;
+import network.Node;
+import network.NodeType;
+import utils.NetworkIO;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,19 +15,11 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 public class NeatMain {
-	/**
-	 * Networks performing below this percentage of the population will be eliminated.
-	 */
-	private static final double HARSHNESS = 0.50;
-	/**
-	 * Number of networks allowed in a generation.
-	 */
-	private static final int POPULATION_SIZE = 150;
-
 
 	/**
 	 * Arguments:
 	 * -Initial population: a directory with network files to start searching from
+	 * -config file
 	 */
 	public static void main(String[] args) {
 		final List<Network> population = new ArrayList<>();
@@ -42,9 +39,8 @@ public class NeatMain {
 				}
 			}
 			else {
-				population.add(
-						NetworkIO.readSilently(path.toString())
-				);
+				Network n = NetworkIO.readSilently(path.toString());
+				if (n != null) population.add(n);
 			}
 		}
 
@@ -56,7 +52,7 @@ public class NeatMain {
 				no file is present in the specified directory;
 				the read failed;
 			 */
-			population.add(initCarNetwork());
+			population.add(initRandomNetwork(8, 5));
 		}
 
 
@@ -64,7 +60,7 @@ public class NeatMain {
 	}
 
 
-	private static Network initCarNetwork() {
+	private static Network initRandomNetwork(int inputsNodes, int outputNodes) {
 		final Network network = new Network();
 		final List<Node> inputs = network.getInputNodes();
 		final List<Node> outputs = network.getOutputNodes();
