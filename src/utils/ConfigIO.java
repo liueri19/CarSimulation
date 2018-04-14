@@ -1,5 +1,7 @@
 package utils;
 
+import ga.Config;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -7,13 +9,11 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 public class ConfigIO {
-	public static void write(Map<?, ?> config) throws IOException {
+	public static void write(Config config) throws IOException {
 		Date now = new Date();
 		DateFormat format = new SimpleDateFormat("yyyyMMdd_HHmmss");
 
@@ -21,10 +21,10 @@ public class ConfigIO {
 				new FileWriter("Config_" + format.format(now) + ".config")
 		);
 
-		for (Map.Entry<?, ?> entry : config.entrySet()) {
-			writer.write(entry.getKey().toString());
+		for (Map.Entry<String, String> entry : config.entrySet()) {
+			writer.write(entry.getKey());
 			writer.write('=');
-			writer.write(entry.getValue().toString());
+			writer.write(entry.getValue());
 			writer.newLine();
 		}
 
@@ -32,7 +32,7 @@ public class ConfigIO {
 	}
 
 
-	public static void writeSilently(Map<?, ?> config) {
+	public static void writeSilently(Config config) {
 		try {
 			write(config);
 		}
@@ -43,19 +43,19 @@ public class ConfigIO {
 	}
 
 
-	public static Map<String, String> read(String path) throws IOException {
-		final Map<String, String> config = new HashMap<>();
+	public static Config read(String path) throws IOException {
+		final Config config = new Config();
 
 		Files.lines(Paths.get(path))
 				.map(line -> line.split("=", 2))
 				.forEach(pair -> config.put(pair[0], pair[1]));
 
-		return Collections.unmodifiableMap(config);
+		return config;
 	}
 
 
-	public static Map<String, String> readSilently(String path) {
-		final Map<String, String> config = null;
+	public static Config readSilently(String path) {
+		final Config config = null;
 
 		try {
 			read(path);

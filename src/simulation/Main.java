@@ -1,8 +1,10 @@
 package simulation;
 
 import network.Network;
+import utils.MapIO;
 import utils.NetworkIO;
 
+import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -20,62 +22,72 @@ public class Main {
 		map
 		network
 		 */
-		final World WORLD =
-				args.length >= 1 ?
-						World.newInstance(args[0], true) :
-						World.newInstance(Collections.emptyList(), true);
-		final Car CAR = WORLD.getCar();
+		final List<Line2D> edges;
+		if (args.length >= 1)
+			edges = MapIO.readMapSilently(args[0]);
+		else
+			edges = Collections.emptyList();
+
+		final Network network;
+		if (args.length >= 2)
+			network = NetworkIO.readSilently(args[1]);
+		else
+			network = null;
+
+		runSimulation(edges, network, true);
+
+		System.exit(0);
+	}
+
+
+	public static void runSimulation(List<Line2D> edges, Network network, boolean doGraphics) {
+		final World world = World.newInstance(edges, doGraphics);
+		final Car CAR = world.getCar();
 
 
 		Future<?> simFuture = EXECUTOR.submit(() -> {
-			WORLD.run(); WORLD.cleanUp();
+			world.run(); world.cleanUp();
 		});
 		Future<?> netFuture = null;
 
-		if (args.length >= 2) {
-			Network network = NetworkIO.readSilently(args[1]);
+		if (network != null) {	//null for manual control
+			if (network.getOutputNodes().size() != 5) {    //make this not a constant?
+				System.err.println("Broken network: need exactly 5 output nodes");
+			}
+			else {
+				netFuture = EXECUTOR.submit(() -> {
 
-			if (network != null) {
-				if (network.getOutputNodes().size() != 5) {	//make this not a constant?
-					System.err.println("Broken network: need exactly 5 output nodes");
-				}
-				else {
-					netFuture = EXECUTOR.submit(() -> {
+					while (!world.isStopped()) {
 
-						while (!WORLD.isStopped()) {
+						List<Double> results =
+								network.compute(
+										scaleToRange(CAR.getReadings(), 0, 500, 0, 1)
+								);
 
-							List<Double> results =
-									network.compute(
-											scaleToRange(CAR.getReadings(), 0, 500, 0, 1)
-									);
+						int n = 0;
+						CAR.setTurningLeft(results.get(n++) > 0.5);
+						CAR.setTurningRight(results.get(n++) > 0.5);
+						CAR.setAccelerating(results.get(n++) > 0.5);
+						CAR.setDecelerating(results.get(n++) > 0.5);
+						CAR.setBraking(results.get(n) > 0.5);
 
-							int n = 0;
-							CAR.setTurningLeft(results.get(n++) > 0.5);
-							CAR.setTurningRight(results.get(n++) > 0.5);
-							CAR.setAccelerating(results.get(n++) > 0.5);
-							CAR.setDecelerating(results.get(n++) > 0.5);
-							CAR.setBraking(results.get(n) > 0.5);
+						try {
+							Thread.sleep(UPDATE_INTERVAL);
 
-							try {
-								Thread.sleep(UPDATE_INTERVAL);
-
-								if (WORLD.isPaused())
-									WORLD.waitForUnpause();
-							}
-							catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-
+							if (world.isPaused())
+								world.waitForUnpause();
+						}
+						catch (InterruptedException e) {
+							e.printStackTrace();
 						}
 
-					});
-				}
+					}
+
+				});
 			}
 		}
 
 		terminateSilently(EXECUTOR, simFuture, netFuture);
-
-		System.exit(0);
 	}
 
 
@@ -88,7 +100,7 @@ public class Main {
 			executor.awaitTermination(1, TimeUnit.SECONDS);
 		}
 		catch (InterruptedException | ExecutionException e) {
-			System.err.println("Things went wrong while terminating...");
+			System.err.println("Things went wrong while terminating simulation...");
 			e.printStackTrace();
 		}
 	}

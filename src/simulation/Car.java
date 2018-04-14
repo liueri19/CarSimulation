@@ -237,9 +237,9 @@ public class Car extends Rectangle2D.Double {
 	public List<Sensor> getSensors() { return Collections.unmodifiableList(sensors); }
 	
 	public List<java.lang.Double> getReadings() {	//conflicting class names
-		List<java.lang.Double> values = new ArrayList<>();
-		sensors.forEach((sensor -> values.add(sensor.measure())));
-		return values;
+		return sensors.stream()
+				.mapToDouble(Sensor::measure)
+				.collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
 	}
 
 

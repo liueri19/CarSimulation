@@ -87,10 +87,6 @@ public class World extends JPanel implements KeyListener {
 		return world;
 	}
 
-	static World newInstance(String mapFile, boolean doGraphics) {
-		return newInstance(MapIO.readMapSilently(mapFile), doGraphics);
-	}
-
 	void run() {
 		while (!stop) {
 			try {
@@ -112,6 +108,12 @@ public class World extends JPanel implements KeyListener {
 	void cleanUp() {
 		holdingFrame.removeKeyListener(this);
 		holdingFrame.dispose();
+	}
+
+
+	void resetCar() {
+		CAR.setTo(INITIAL_X, INITIAL_Y);
+		CAR.setHeading(0);
 	}
 
 
@@ -296,8 +298,8 @@ public class World extends JPanel implements KeyListener {
 	@Override
 	public void keyTyped(KeyEvent e) {
 		char keyChar = e.getKeyChar();
-		if (keyChar == 'r')    //reset CAR location
-			CAR.setTo(INITIAL_X, INITIAL_Y);
+		if (keyChar == 'r')
+			resetCar();
 
 			//these flags should be modified only by key events
 		else if (keyChar == 'p') {    //pause

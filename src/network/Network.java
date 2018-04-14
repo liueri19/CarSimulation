@@ -192,9 +192,15 @@ public class Network {
 	/**
 	 * Performs a crossover with the specified Network and returns the offspring.
 	 */
-//	public Network reproduceWith(Network other) {
-//		Network better =
-//	}
+	public Network reproduceWith(Network other) {
+		// TODO crossover
+		return null;
+	}
+
+	private static final Random RANDOM = new Random();
+	private static boolean randomBoolean() {
+		return RANDOM.nextBoolean();
+	}
 
 
 	//////////////////////////////
