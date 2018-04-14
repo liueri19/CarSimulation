@@ -55,7 +55,7 @@ public class NetworkIO {
 		writer.newLine();
 
 		//write connections
-		for (Connection c : network.getConnections()) {
+		for (Connection c : network.getConnections().values()) {
 			writer.write(c.toString());
 			writer.newLine();
 		}

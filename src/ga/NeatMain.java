@@ -66,7 +66,11 @@ public class NeatMain {
 
 		System.out.println("Search started: " + LocalDateTime.now());
 
+
 		final double targetFitness = Double.parseDouble(config.get("target_fitness"));
+		final double harshness = Double.parseDouble(config.get("harshness"));
+		final Evaluator evaluator = new CarControlEvaluator(config.get("map"));
+
 		for (double champFitness = 0; champFitness < targetFitness; ) {
 			//evaluate fitness
 			// TODO evaluate, eliminate, reproduce, mutate
@@ -84,7 +88,7 @@ public class NeatMain {
 
 		System.out.println("Solution found: " + LocalDateTime.now());
 
-//		population.forEach(NetworkIO::writeSilently);
+		NetworkIO.writeSilently(population.get(0));	//write champ
 	}
 
 
@@ -101,10 +105,10 @@ public class NeatMain {
 		final List<Node> outputs = network.getOutputNodes();
 
 		for (int i = 0; i < inputsNodes; i++)
-			inputs.add(new Node.NodeBuilder(NodeType.INPUT).build());
+			inputs.add(new Node.NodeBuilder(NodeType.INPUT, network.getNextNodeID()).build());
 
 		for (int i = 0; i < outputNodes; i++)
-			outputs.add(new Node.NodeBuilder(NodeType.OUTPUT).build());
+			outputs.add(new Node.NodeBuilder(NodeType.OUTPUT, network.getNextNodeID()).build());
 
 //		//connect inputs to outputs
 //		for (Node input : inputs) {

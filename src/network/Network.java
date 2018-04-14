@@ -14,11 +14,18 @@ public class Network {
 	private final List<Node> outputNodes = new ArrayList<>();
 	private final SortedMap<Long, Node> hiddens = new TreeMap<>();
 
-	private final SortedSet<Connection> connections = new TreeSet<>(
-			Comparator.comparingLong(Connection::getInnovationNumber)
-	);
+//	private final SortedSet<Connection> connections = new TreeSet<>(
+//			Comparator.comparingLong(Connection::getInnovationNumber)
+//	);
+	private final SortedMap<Long, Connection> connections = new TreeMap<>();
 
-	
+	private long global_id = 0;
+
+	public synchronized long getNextNodeID() {
+		return global_id++;
+	}
+
+
 	/**
 	 * Given a list of doubles as input values for the input nodes, computes through the
 	 * network and returns a list of doubles containing the results from the output nodes.
@@ -126,7 +133,7 @@ public class Network {
 		if (!nextNodeConnections.contains(connection))
 			connection.getNextNode().addInput(connection);
 
-		connections.add(connection);
+		connections.put(connection.getInnovationNumber(), connection);
 	}
 
 
@@ -156,12 +163,12 @@ public class Network {
 	 * @param connection	The Connection to place the new Node on
 	 */
 	public void addNode(Connection connection) {
-		if (!connections.contains(connection))
+		if (!connections.containsKey(connection.getInnovationNumber()))
 			throw new IllegalArgumentException("Connection is not in the network");
 
 		connection.setEnabled(false);
 
-		final Node newNode = new Node.NodeBuilder(NodeType.HIDDEN).build();
+		final Node newNode = new Node.NodeBuilder(NodeType.HIDDEN, getNextNodeID()).build();
 
 		// keeps identical weight and bias
 		final Connection connection1 =
@@ -184,8 +191,8 @@ public class Network {
 		newNode.addOutput(connection2);
 
 		getHiddens().put(newNode.getID(), newNode);
-		getConnections().add(connection1);
-		getConnections().add(connection2);
+		getConnections().put(connection1.getInnovationNumber(), connection1);
+		getConnections().put(connection2.getInnovationNumber(), connection2);
 	}
 
 
@@ -194,6 +201,8 @@ public class Network {
 	 */
 	public Network reproduceWith(Network other) {
 		// TODO crossover
+
+
 		return null;
 	}
 
@@ -212,5 +221,5 @@ public class Network {
 
 	public List<Node> getOutputNodes() { return outputNodes; }
 
-	public Set<Connection> getConnections() { return connections; }
+	public Map<Long, Connection> getConnections() { return connections; }
 }

@@ -10,8 +10,6 @@ public class Connection {
 	private final long innovNum;
 	private boolean enabled = true;
 
-	private static long globalInnovationNumber = 0;
-
 	public Connection(long innovationNumber,
 					  double weight, double bias,
 					  Node prevNode,
@@ -82,6 +80,8 @@ public class Connection {
 				getNextNode().equals(((Connection) c).getNextNode());
 	}
 
+
+	private static long globalInnovationNumber = 0;
 
 	static synchronized long getNextGlobalInnovNum() { return globalInnovationNumber++; }
 

@@ -7,8 +7,6 @@ import java.util.List;
  * Represents a single neuron.
  */
 public class Node implements Comparable<Node> {
-	private static long global_id = 0;
-
 	private final long ID;
 	private final String strID;
 	private final NodeType type;
@@ -39,11 +37,14 @@ public class Node implements Comparable<Node> {
 
 
 	public static class NodeBuilder {
-		private Long id;
+		private long id;
 		private NodeType type;
 		private List<Connection> prevConnections, nextConnections;
 
-		public NodeBuilder(NodeType nodeType) { type = nodeType; }
+		public NodeBuilder(NodeType nodeType, long id) {
+			type = nodeType;
+			this.id = id;
+		}
 
 		public NodeBuilder setNodeType(NodeType type) { this.type = type; return this; }
 
@@ -61,7 +62,6 @@ public class Node implements Comparable<Node> {
 
 		public Node build() {
 			if (type == null) type = NodeType.HIDDEN;
-			if (id == null) id = getNextAvailableID();
 			if (prevConnections == null) prevConnections = new ArrayList<>();
 			if (nextConnections == null) nextConnections = new ArrayList<>();
 
@@ -104,7 +104,7 @@ public class Node implements Comparable<Node> {
 
 		final NodeType type = NodeType.of(String.valueOf(typeChar));
 		final NodeBuilder builder =
-				new Node.NodeBuilder(type).setId(id);
+				new Node.NodeBuilder(type, id);
 
 		return builder.build();
 	}
@@ -136,10 +136,6 @@ public class Node implements Comparable<Node> {
 
 
 	public long getID() { return ID; }
-
-	public static synchronized long getNextAvailableID() {
-		return global_id++;
-	}
 
 
 	public boolean addInput(Connection connection) {

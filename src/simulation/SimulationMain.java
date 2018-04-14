@@ -10,13 +10,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
 
-public class Main {
+public class SimulationMain {
 	public static final long UPDATE_INTERVAL = 10;	//ms
 
 	static final ExecutorService EXECUTOR = Executors.newCachedThreadPool();
 
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		/*
 		2 arguments, both optional:
 		map
@@ -36,11 +36,15 @@ public class Main {
 
 		runSimulation(edges, network, true);
 
+		EXECUTOR.shutdown();
+		EXECUTOR.awaitTermination(1, TimeUnit.SECONDS);
+
 		System.exit(0);
 	}
 
 
 	public static void runSimulation(List<Line2D> edges, Network network, boolean doGraphics) {
+		// TODO return a result instead of void
 		final World world = World.newInstance(edges, doGraphics);
 		final Car CAR = world.getCar();
 
@@ -52,7 +56,7 @@ public class Main {
 
 		if (network != null) {	//null for manual control
 			if (network.getOutputNodes().size() != 5) {    //make this not a constant?
-				System.err.println("Broken network: need exactly 5 output nodes");
+				System.err.println("Bad network: need exactly 5 output nodes");
 			}
 			else {
 				netFuture = EXECUTOR.submit(() -> {
@@ -87,20 +91,20 @@ public class Main {
 			}
 		}
 
-		terminateSilently(EXECUTOR, simFuture, netFuture);
+		awaitCompletion(EXECUTOR, simFuture, netFuture);
 	}
 
 
-	private static void terminateSilently(ExecutorService executor, Future<?>... futures) {
+	private static void awaitCompletion(ExecutorService executor, Future<?>... futures) {
 		try {
 			for (Future<?> f : futures)
 				if (f != null) f.get();
 
-			executor.shutdown();
-			executor.awaitTermination(1, TimeUnit.SECONDS);
+//			executor.shutdown();
+//			executor.awaitTermination(1, TimeUnit.SECONDS);
 		}
 		catch (InterruptedException | ExecutionException e) {
-			System.err.println("Things went wrong while terminating simulation...");
+			System.err.println("Things went wrong during simulation...");
 			e.printStackTrace();
 		}
 	}
