@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
 
-public class SimulationMain {
+public class Simulation {
 	public static final long UPDATE_INTERVAL = 10;	//ms
 
 	static final ExecutorService EXECUTOR = Executors.newCachedThreadPool();
@@ -43,13 +43,35 @@ public class SimulationMain {
 	}
 
 
-	public static void runSimulation(List<Line2D> edges, Network network, boolean doGraphics) {
-		// TODO return a result instead of void
+	/**
+	 * A class that bundles information about the result of a simulation run.
+	 */
+	public static class Result {
+		private long operationsConsumed;
+		private double completion;
+
+		private Result() {}
+		private Result(long operations, double completion) {
+			operationsConsumed = operations;
+			this.completion = completion;
+		}
+
+		public double getCompletion() { return completion; }
+		public long getOperations() { return operationsConsumed; }
+		private void setOperations(long operations) { operationsConsumed = operations; }
+		private void setCompletion(double completion) { this.completion = completion; }
+	}
+
+	public static Result runSimulation(List<Line2D> edges, Network network, boolean doGraphics) {
 		final World world = World.newInstance(edges, doGraphics);
 		final Car CAR = world.getCar();
 
+		final Result result = new Result();
+
 
 		Future<?> simFuture = EXECUTOR.submit(() -> {
+			// TODO set result operations count
+			// TODO set result completion
 			world.run(); world.cleanUp();
 		});
 		Future<?> netFuture = null;
@@ -92,6 +114,8 @@ public class SimulationMain {
 		}
 
 		awaitCompletion(EXECUTOR, simFuture, netFuture);
+
+		return result;
 	}
 
 

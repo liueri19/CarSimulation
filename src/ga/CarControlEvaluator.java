@@ -1,7 +1,7 @@
 package ga;
 
 import network.Network;
-import simulation.SimulationMain;
+import simulation.Simulation;
 import utils.MapIO;
 
 import java.awt.geom.Line2D;
@@ -18,13 +18,13 @@ public class CarControlEvaluator implements Evaluator {
 
 	@Override
 	public double evaluate(Network network) {
-		SimulationMain.runSimulation(map, network, true);
+		Simulation.runSimulation(map, network, true);
 
 		final double percentCompleted = 0;
 		final long timeConsumed = 0;
 
 		// TODO calculate fitness
-		final double fitness = 0;
+		double fitness = 0;
 
 		return fitness;
 	}

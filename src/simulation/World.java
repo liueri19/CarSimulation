@@ -90,7 +90,7 @@ public class World extends JPanel implements KeyListener {
 	void run() {
 		while (!stop) {
 			try {
-				Thread.sleep(SimulationMain.UPDATE_INTERVAL);
+				Thread.sleep(Simulation.UPDATE_INTERVAL);
 
 				if (isPaused())
 					waitForUnpause();

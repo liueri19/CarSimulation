@@ -43,7 +43,7 @@ public class Sensor {
 			while (!world.isStopped()) {
 				try {
 					//sensor sleeps less
-					Thread.sleep(SimulationMain.UPDATE_INTERVAL /2);
+					Thread.sleep(Simulation.UPDATE_INTERVAL /2);
 
 					if (world.isPaused())
 						world.waitForUnpause();
