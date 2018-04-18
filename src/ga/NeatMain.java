@@ -69,7 +69,8 @@ public class NeatMain {
 
 		final double targetFitness = Double.parseDouble(config.get("target_fitness"));
 		final double harshness = Double.parseDouble(config.get("harshness"));
-		final Evaluator evaluator = new CarControlEvaluator(config.get("map"));
+		final boolean doGraphics = Boolean.parseBoolean(config.get("do_graphics"));
+		final Evaluator evaluator = new CarControlEvaluator(config.get("map"), doGraphics);
 
 		for (double champFitness = 0; champFitness < targetFitness; ) {
 			//evaluate fitness
