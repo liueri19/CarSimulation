@@ -46,15 +46,24 @@ public class Simulation {
 	/**
 	 * A class that bundles information about the result of a simulation run.
 	 */
-	static class Result {
-		long operationsConsumed;
-		double completion;
+	public static class Result {
+		private long operationsConsumed;
+		private double completion;
 
 		Result() {}
 		Result(long operations, double completion) {
 			operationsConsumed = operations;
 			this.completion = completion;
 		}
+
+		public synchronized long getOperations() { return operationsConsumed; }
+		public synchronized double getCompletion() { return completion; }
+
+		public synchronized void setCompletion(double completion) { this.completion = completion; }
+		public synchronized void setOperations(long operations) { operationsConsumed = operations; }
+
+		public synchronized void incrementOperations() { operationsConsumed++; }
+		public synchronized void increaseCompletionBy(double amount) { completion += amount; }
 	}
 
 	public static Result runSimulation(List<Line2D> edges, Network network, boolean doGraphics) {
@@ -65,8 +74,8 @@ public class Simulation {
 
 		Future<?> simFuture = EXECUTOR.submit(() -> {
 			final Result r = world.run();
-			result.operationsConsumed = r.operationsConsumed;
-			result.completion = r.completion;
+			result.setOperations(r.getOperations());
+			result.setCompletion(r.getCompletion());
 			world.cleanUp();
 		});
 		Future<?> netFuture = null;

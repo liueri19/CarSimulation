@@ -106,7 +106,7 @@ public class World extends JPanel implements KeyListener {
 				break;
 			}
 
-			result.operationsConsumed++;
+			result.incrementOperations();
 		}
 
 		return result;
