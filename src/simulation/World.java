@@ -1,6 +1,7 @@
 package simulation;
 
 import utils.MapIO;
+import static simulation.Simulation.Result;
 
 import javax.swing.*;
 import java.awt.*;
@@ -87,7 +88,9 @@ public class World extends JPanel implements KeyListener {
 		return world;
 	}
 
-	void run() {
+	Result run() {
+		Result result = new Result();
+		// TODO evaluate distance traveled
 		while (!stop) {
 			try {
 				Thread.sleep(Simulation.UPDATE_INTERVAL);
@@ -102,7 +105,11 @@ public class World extends JPanel implements KeyListener {
 				e.printStackTrace();
 				break;
 			}
+
+			result.operationsConsumed++;
 		}
+
+		return result;
 	}
 
 	void cleanUp() {
