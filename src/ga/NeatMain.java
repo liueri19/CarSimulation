@@ -20,6 +20,8 @@ import java.util.stream.Stream;
 public class NeatMain {
 	private static final String DEFAULT_CONFIG = "configs/default.config";
 
+	private static long generations;	//just for printing some stats
+
 	/**
 	 * Arguments:
 	 * -Initial population: a directory with network files to start searching from
@@ -67,44 +69,16 @@ public class NeatMain {
 
 		System.out.println("Search started: " + LocalDateTime.now());
 
+		final boolean doGraphics = Boolean.parseBoolean(config.get("do_graphics"));
 
-		final double targetFitness = Double.parseDouble(config.get("target_fitness"));
-		final double harshness = Double.parseDouble(config.get("harshness"));
-		final Evaluator evaluator = new CarControlEvaluator(config.get("map"));
-
-		for (double champFitness = 0; champFitness < targetFitness; ) {
-			// TODO develop networks
-
-
-			// evaluate fitness
-			population.forEach(n -> n.setFitness(evaluator.evaluate(n)));
-
-
-			// rank solutions
-			population.sort(Comparator.comparingDouble(Network::getFitness).reversed());
-
-			// eliminate based on harshness
-			{
-				int numUnfit = (int) (population.size() * harshness);
-				// remove the unfit ones
-				for (int i = population.size()-1;
-					 i >= 0 && numUnfit > 0;
-					 i--, numUnfit--)
-					population.remove(i);
-			}
-
-
-			// TODO reproduce to refill population
-
-
-			// TODO mutate
-
-		}
-
+		Network solution = findSolution(
+				population,
+				config,
+				new CarControlEvaluator(config.get("map"), doGraphics));
 
 		System.out.println("Solution found: " + LocalDateTime.now());
 
-		NetworkIO.writeSilently(population.get(0));	//write champ
+		NetworkIO.writeSilently(solution);	//write champ
 	}
 
 
@@ -133,6 +107,31 @@ public class NeatMain {
 //		}
 
 		return network;
+	}
+
+
+	private static Network findSolution(List<Network> population, Config config, Evaluator evaluator) {
+		final double targetFitness = Double.parseDouble(config.get("target_fitness"));
+		final double harshness = Double.parseDouble(config.get("harshness"));
+
+		for (double champFitness = 0; champFitness < targetFitness; ) {
+			System.out.println("Generation: " + ++generations);	// something more elegant than this?
+
+			// TODO evaluate, eliminate, reproduce, mutate
+			//evaluate fitness
+
+
+			//eliminate
+
+
+			//reproduce
+
+
+			//mutate
+
+		}
+
+		return population.get(0);
 	}
 
 

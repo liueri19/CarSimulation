@@ -5,13 +5,14 @@ import java.util.*;
 /**
  * Represents a neural network.
  * A Network contains the genetic information of a genotype, at the same time also
- * provides the functionalities of a phenotype.
+ * provides the functions of a phenotype.
  */
 public class Network {
 
 	//order of elements must be kept
 	private final List<Node> inputNodes = new ArrayList<>();
 	private final List<Node> outputNodes = new ArrayList<>();
+
 	private final SortedMap<Long, Node> hiddens = new TreeMap<>();
 
 	private final SortedMap<Long, Connection> connections = new TreeMap<>();

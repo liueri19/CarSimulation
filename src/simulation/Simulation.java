@@ -50,16 +50,20 @@ public class Simulation {
 		private long operationsConsumed;
 		private double completion;
 
-		private Result() {}
-		private Result(long operations, double completion) {
+		Result() {}
+		Result(long operations, double completion) {
 			operationsConsumed = operations;
 			this.completion = completion;
 		}
 
-		public double getCompletion() { return completion; }
-		public long getOperations() { return operationsConsumed; }
-		private void setOperations(long operations) { operationsConsumed = operations; }
-		private void setCompletion(double completion) { this.completion = completion; }
+		public synchronized long getOperations() { return operationsConsumed; }
+		public synchronized double getCompletion() { return completion; }
+
+		public synchronized void setCompletion(double completion) { this.completion = completion; }
+		public synchronized void setOperations(long operations) { operationsConsumed = operations; }
+
+		public synchronized void incrementOperations() { operationsConsumed++; }
+		public synchronized void increaseCompletionBy(double amount) { completion += amount; }
 	}
 
 	public static Result runSimulation(List<Line2D> edges, Network network, boolean doGraphics) {
@@ -68,11 +72,11 @@ public class Simulation {
 
 		final Result result = new Result();
 
-
 		Future<?> simFuture = EXECUTOR.submit(() -> {
-			// TODO set result operations count
-			// TODO set result completion
-			world.run(); world.cleanUp();
+			final Result r = world.run();
+			result.setOperations(r.getOperations());
+			result.setCompletion(r.getCompletion());
+			world.cleanUp();
 		});
 		Future<?> netFuture = null;
 
