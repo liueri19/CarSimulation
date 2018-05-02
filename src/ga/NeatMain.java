@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -72,16 +73,31 @@ public class NeatMain {
 		final Evaluator evaluator = new CarControlEvaluator(config.get("map"));
 
 		for (double champFitness = 0; champFitness < targetFitness; ) {
-			//evaluate fitness
-			// TODO evaluate, eliminate, reproduce, mutate
-
-			//eliminate
+			// TODO develop networks
 
 
-			//reproduce
+			// evaluate fitness
+			population.forEach(n -> n.setFitness(evaluator.evaluate(n)));
 
 
-			//mutate
+			// rank solutions
+			population.sort(Comparator.comparingDouble(Network::getFitness).reversed());
+
+			// eliminate based on harshness
+			{
+				int numUnfit = (int) (population.size() * harshness);
+				// remove the unfit ones
+				for (int i = population.size()-1;
+					 i >= 0 && numUnfit > 0;
+					 i--, numUnfit--)
+					population.remove(i);
+			}
+
+
+			// TODO reproduce to refill population
+
+
+			// TODO mutate
 
 		}
 

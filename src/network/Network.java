@@ -14,12 +14,11 @@ public class Network {
 	private final List<Node> outputNodes = new ArrayList<>();
 	private final SortedMap<Long, Node> hiddens = new TreeMap<>();
 
-//	private final SortedSet<Connection> connections = new TreeSet<>(
-//			Comparator.comparingLong(Connection::getInnovationNumber)
-//	);
 	private final SortedMap<Long, Connection> connections = new TreeMap<>();
 
 	private long global_id = 0;
+
+	private double fitness;
 
 	public synchronized long getNextNodeID() {
 		return global_id++;
@@ -216,10 +215,9 @@ public class Network {
 	//basic getters - nothing interesting past this point
 
 	public Map<Long, Node> getHiddens() { return hiddens; }
-
 	public List<Node> getInputNodes() { return inputNodes; }
-
 	public List<Node> getOutputNodes() { return outputNodes; }
-
 	public Map<Long, Connection> getConnections() { return connections; }
+	public double getFitness() { return fitness; }
+	public void setFitness(double fitness) { this.fitness = fitness; }
 }
