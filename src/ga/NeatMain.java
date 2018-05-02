@@ -117,18 +117,33 @@ public class NeatMain {
 		for (double champFitness = 0; champFitness < targetFitness; ) {
 			System.out.println("Generation: " + ++generations);	// something more elegant than this?
 
-			// TODO evaluate, eliminate, reproduce, mutate
-			//evaluate fitness
+			// rank solutions
+			population.sort(Comparator.comparingDouble(Network::getFitness).reversed());
+
+			// eliminate based on harshness
+			{
+				int numUnfit = (int) (population.size() * harshness);
+				// remove the unfit ones
+				for (int i = population.size()-1;
+					 i >= 0 && numUnfit > 0;
+					 i--, numUnfit--)
+					population.remove(i);
+			}
 
 
-			//eliminate
+			// TODO reproduce to refill population
 
 
-			//reproduce
+			// TODO mutate
 
 
-			//mutate
+			// TODO develop networks
 
+
+			// evaluate fitness
+			population.forEach(n -> n.setFitness(evaluator.evaluate(n)));
+
+			champFitness = population.get(0).getFitness();
 		}
 
 		return population.get(0);
