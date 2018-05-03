@@ -1,6 +1,7 @@
 package simulation;
 
 import java.awt.*;
+import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,9 +56,11 @@ public class Car extends Rectangle2D.Double {
 	private volatile double xC, yC;
 
 	/**
-	 * For example, if accelerating is true, the car should accelerate every update
+	 * For example, if accelerating is true, the car should accelerate every advance
 	 */
 	private volatile boolean accelerating, decelerating, braking, turningLeft, turningRight;
+
+	private volatile boolean hasCrashed;
 
 	private final Sensor sensorL, sensorR, sensorF, sensorB, sensorFL, sensorFR, sensorLF, sensorRF;
 	private final List<Sensor> sensors = new ArrayList<>();
@@ -197,40 +200,35 @@ public class Car extends Rectangle2D.Double {
 	public boolean isAccelerating() {
 		return accelerating;
 	}
-
-	public void setAccelerating(boolean accelerating) {
+	void setAccelerating(boolean accelerating) {
 		this.accelerating = accelerating;
 	}
 
 	public boolean isDecelerating() {
 		return decelerating;
 	}
-
-	public void setDecelerating(boolean decelerating) {
+	void setDecelerating(boolean decelerating) {
 		this.decelerating = decelerating;
 	}
 
 	public boolean isBraking() {
 		return braking;
 	}
-
-	public void setBraking(boolean braking) {
+	void setBraking(boolean braking) {
 		this.braking = braking;
 	}
 
 	public boolean isTurningLeft() {
 		return turningLeft;
 	}
-
-	public void setTurningLeft(boolean turningLeft) {
+	void setTurningLeft(boolean turningLeft) {
 		this.turningLeft = turningLeft;
 	}
 
 	public boolean isTurningRight() {
 		return turningRight;
 	}
-
-	public void setTurningRight(boolean turningRight) {
+	void setTurningRight(boolean turningRight) {
 		this.turningRight = turningRight;
 	}
 	
@@ -242,15 +240,17 @@ public class Car extends Rectangle2D.Double {
 				.collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
 	}
 
+	public boolean hasCrahsed() { return hasCrashed; }
+
 
 	/**
-	 * Update the location of this car based on the current speed and heading.
+	 * Advance the location of this car based on the current speed and heading.
 	 */
-	synchronized void update() {
+	synchronized void advance() {
 		xC += getSpeed() * Math.cos(getHeading());
 		yC += getSpeed() * Math.sin(getHeading());
 		
-		//don't update the graphics, keep car in the center
+		//don't advance the graphics, keep car in the center
 //		x = xC - LENGTH / 2;
 //		y = -yC - WIDTH / 2;
 
@@ -279,5 +279,14 @@ public class Car extends Rectangle2D.Double {
 				turnLeft();
 		}
 		heading %= 2*Math.PI;
+
+		updateCollisionState();
+	}
+
+	private void updateCollisionState() {
+		for (Line2D edge : world.getTrackEdges()) {
+			if (edge.intersects(this))
+				hasCrashed = true;
+		}
 	}
 }

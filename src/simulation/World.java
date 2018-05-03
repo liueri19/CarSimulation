@@ -90,7 +90,7 @@ public class World extends JPanel implements KeyListener {
 
 	Result run() {
 		Result result = new Result();
-		// TODO evaluate distance traveled
+
 		while (!stop) {
 			try {
 				Thread.sleep(Simulation.UPDATE_INTERVAL);
@@ -99,6 +99,8 @@ public class World extends JPanel implements KeyListener {
 					waitForUnpause();
 
 				updateSimulation();
+
+				if (CAR.hasCrahsed()) stop = true;
 			}
 			catch (InterruptedException e) {
 				System.err.println("Simulation interrupted");
@@ -109,8 +111,19 @@ public class World extends JPanel implements KeyListener {
 			result.incrementOperations();
 		}
 
+		// TODO evaluate distance traveled
+
 		return result;
 	}
+
+	/**
+	 * Update car, update graphics.
+	 */
+	private void updateSimulation() {
+		CAR.advance();
+		repaint();
+	}
+
 
 	void cleanUp() {
 		holdingFrame.removeKeyListener(this);
@@ -250,21 +263,6 @@ public class World extends JPanel implements KeyListener {
 	 */
 	public boolean isPaused() { return pause; }
 
-	/**
-	 * Checks if car crashed, update car, update graphics.
-	 */
-	private void updateSimulation() {
-		//could be replaced with sensor checks
-		for (Line2D line : getTrackEdges()) {
-			if (CAR.intersectsLine(line)) {
-				//car crashed
-				break;
-			}
-		}
-		CAR.update();
-
-		repaint();
-	}
 
 	//////////////////////////////
 	//handling key presses

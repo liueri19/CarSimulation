@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Utility methods for reading and writing track edges.
@@ -77,12 +78,17 @@ public class MapIO {
 	}
 
 
+	private static final Pattern EDGE_LINE_PATTERN =
+			Pattern.compile("\\(\\d, \\d\\)->\\(\\d, \\d\\)");
+	private static final Pattern ARROW =
+			Pattern.compile("->");
+
 	private static Line2D parseEdge(String s) {
-		if (!s.matches("\\(\\d, \\d\\)->\\(\\d, \\d\\)"))
+		if (!EDGE_LINE_PATTERN.matcher(s).matches())
 			throw new IllegalArgumentException("Incomplete edge: " + s);
 
 
-		final String[] endPoints = s.split("->");
+		final String[] endPoints = ARROW.split(s);
 
 		final String stringP1, stringP2;
 		stringP1 = endPoints[0];
@@ -95,8 +101,13 @@ public class MapIO {
 		return new Line2D.Double(p1, p2);
 	}
 
+
+	private static final Pattern COMMA =
+			Pattern.compile(", ");
+
 	private static Point2D parsePoint(String s) {
-		final String[] xy = s.substring(1, s.length()-1).split(", ");
+		final String xCommaY = s.substring(1, s.length()-1);	//strip parenthesis
+		final String[] xy = COMMA.split(xCommaY);
 		final double x, y;
 		x = Double.parseDouble(xy[0]);
 		y = Double.parseDouble(xy[1]);
