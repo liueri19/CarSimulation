@@ -152,7 +152,7 @@ public class Network {
 			throw new IllegalArgumentException("Node is not in the network");
 
 		Connection c =
-				new Connection(Connection.getNextGlobalInnovNum(), weight, bias, from, to);
+				new Connection(Connection.getNextGlobalInnovationNum(), weight, bias, from, to);
 
 		putConnection(c);
 	}
@@ -173,7 +173,7 @@ public class Network {
 		// keeps identical weight and bias
 		final Connection connection1 =
 				new Connection(
-						Connection.getNextGlobalInnovNum(),
+						Connection.getNextGlobalInnovationNum(),
 						connection.getWeight(), connection.getBias(),
 						connection.getPrevNode(),
 						newNode
@@ -181,7 +181,7 @@ public class Network {
 		// weight of 1 and bias of 0
 		final Connection connection2 =
 				new Connection(
-						Connection.getNextGlobalInnovNum(),
+						Connection.getNextGlobalInnovationNum(),
 						1, 0,
 						newNode,
 						connection.getNextNode()
@@ -200,10 +200,56 @@ public class Network {
 	 * Performs a crossover with the specified Network and returns the offspring.
 	 */
 	public Network reproduceWith(Network other) {
-		// TODO crossover
+
+		final Network child = new Network();
+
+//		final Network fittest;
+//		// if of equal fitness, choose a random one
+//		if (this.getFitness() == other.getFitness())
+//			fittest = randomBoolean() ? this : other;
+//		else
+//			fittest = this.getFitness() > other.getFitness() ? this : other;
+
+		final Map<Long, Connection> connectsThis = getConnections();
+		final Map<Long, Connection> connectsOther = other.getConnections();
 
 
-		return null;
+		final List<Long> innovNumsThis = new ArrayList<>(connectsThis.keySet());
+		final List<Long> innovNumsOther = new ArrayList<>(connectsOther.keySet());
+
+		int iThis = 0, iOther = 0;
+		for ( ; iThis < innovNumsThis.size() && iOther < innovNumsOther.size(); ) {
+			final long innovNumThis = innovNumsThis.get(iThis);
+			final long innovNumOther = innovNumsOther.get(iOther);
+
+			// add matching genes randomly
+			if (innovNumThis == innovNumOther) {
+				child.putConnection(
+						randomBoolean() ? connectsThis.get(innovNumThis) :
+								connectsOther.get(innovNumOther)
+				);
+				iThis++; iOther++;
+			}
+			else {	// add all disjoint genes
+				final Connection c;
+				if (innovNumThis < innovNumOther) {
+					c = connectsThis.get(innovNumThis); iThis++;
+				}
+				else {
+					c = connectsOther.get(innovNumOther); iOther++;
+				}
+
+				child.putConnection(c);
+			}
+		}
+
+		// add all excess genes
+		for ( ; iThis < innovNumsThis.size(); iThis++)
+			child.putConnection(connectsThis.get(innovNumsThis.get(iThis)));
+		for ( ; iOther < innovNumsOther.size(); iOther++)
+			child.putConnection(connectsOther.get(innovNumsOther.get(iOther)));
+
+		return child;
 	}
 
 	private static final Random RANDOM = new Random();

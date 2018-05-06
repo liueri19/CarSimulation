@@ -13,10 +13,10 @@ import java.util.concurrent.*;
 public class Simulation {
 	public static final long UPDATE_INTERVAL = 10;	//ms
 
-	static final ExecutorService EXECUTOR = Executors.newCachedThreadPool();
+	private static final ExecutorService EXECUTOR = Executors.newCachedThreadPool();
 
 	
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		/*
 		2 arguments, both optional:
 		map
@@ -36,8 +36,7 @@ public class Simulation {
 
 		runSimulation(edges, network, true);
 
-		EXECUTOR.shutdown();
-		EXECUTOR.awaitTermination(1, TimeUnit.SECONDS);
+		shutdown();
 
 		System.exit(0);
 	}
@@ -94,12 +93,11 @@ public class Simulation {
 										scaleToRange(CAR.getReadings(), 0, 500, 0, 1)
 								);
 
-						int n = 0;
-						CAR.setTurningLeft(results.get(n++) > 0.5);
-						CAR.setTurningRight(results.get(n++) > 0.5);
-						CAR.setAccelerating(results.get(n++) > 0.5);
-						CAR.setDecelerating(results.get(n++) > 0.5);
-						CAR.setBraking(results.get(n) > 0.5);
+						CAR.setTurningLeft(results.get(0) > 0.5);
+						CAR.setTurningRight(results.get(1) > 0.5);
+						CAR.setAccelerating(results.get(2) > 0.5);
+						CAR.setDecelerating(results.get(3) > 0.5);
+						CAR.setBraking(results.get(4) > 0.5);
 
 						try {
 							Thread.sleep(UPDATE_INTERVAL);
@@ -117,19 +115,20 @@ public class Simulation {
 			}
 		}
 
-		awaitCompletion(EXECUTOR, simFuture, netFuture);
+		awaitCompletion(simFuture, netFuture);
 
 		return result;
 	}
 
 
-	private static void awaitCompletion(ExecutorService executor, Future<?>... futures) {
+	/**
+	 * Waits for all futures to complete.
+	 * This method blocks until all futures have completed.
+	 */
+	private static void awaitCompletion(Future<?>... futures) {
 		try {
 			for (Future<?> f : futures)
 				if (f != null) f.get();
-
-//			executor.shutdown();
-//			executor.awaitTermination(1, TimeUnit.SECONDS);
 		}
 		catch (InterruptedException | ExecutionException e) {
 			System.err.println("Things went wrong during simulation...");
@@ -138,16 +137,29 @@ public class Simulation {
 	}
 
 
+	/**
+	 * Scales inputs to a specific range.
+	 * Given a list of doubles, map each value from it's original range to the equivalent
+	 * value in specified range. 1 in range [0, 6] would be mapped to 1.5 in range [1, 4].
+	 */
 	private static List<Double> scaleToRange(List<Double> inputs,
 											 double originalLower, double originalUpper,
 											 double lower, double upper) {
-		final List<Double> outputs = new ArrayList<>();
+		final List<Double> results = new ArrayList<>();
 
 		final double factor = (upper - lower) / (originalUpper - originalLower);
 
 		for (double input : inputs)
-			outputs.add(factor * input);
+			results.add(lower + factor * input);
 
-		return outputs;
+		return results;
+	}
+
+
+	/**
+	 * Shuts down the simulation.
+	 */
+	public static void shutdown() {
+		EXECUTOR.shutdown();
 	}
 }

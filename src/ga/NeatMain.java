@@ -3,6 +3,7 @@ package ga;
 import network.Network;
 import network.Node;
 import network.NodeType;
+import simulation.Simulation;
 import utils.ConfigIO;
 import utils.NetworkIO;
 
@@ -67,6 +68,7 @@ public class NeatMain {
 			initPopulation(population, Integer.parseInt(config.get("population_size")));
 		}
 
+
 		System.out.println("Search started: " + LocalDateTime.now());
 
 		final boolean doGraphics = Boolean.parseBoolean(config.get("do_graphics"));
@@ -78,7 +80,11 @@ public class NeatMain {
 
 		System.out.println("Solution found: " + LocalDateTime.now());
 
+
 		NetworkIO.writeSilently(solution);	//write champ
+
+
+		Simulation.shutdown();
 	}
 
 
